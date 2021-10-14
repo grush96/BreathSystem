@@ -1,0 +1,398 @@
+body {
+    font-family: 'Montserrat', sans-serif;
+    /* background-color: #312E29; */
+    /* background-color: #333; */
+    color: #333;
+}
+
+.hero.is-landing {
+    background: url(./images/castle-main.jpg) no-repeat center center;
+    background-size: cover;
+}
+
+.hero.is-party {
+    background: url(./images/ice-giant.jpg) no-repeat center center;
+    background-size: cover;
+}
+
+.is-party .navbar-item .title {
+    color: #eee;
+}
+
+.hero.is-combat {
+    background: url(./images/castle-main.jpg) no-repeat center center;
+    background-size: cover;
+}
+
+.notification {
+    outline: solid #333 2px;
+    padding: 1rem 1rem 1rem 1rem;
+}
+
+.hero-head {
+    font-family: 'Libre Baskerville', serif;
+    /* background-color: #eee; */
+    color: #333;
+    width: 80%;
+    /* border-bottom: 2px solid #333;
+    margin-bottom: -2px; */
+    margin: auto;
+}
+
+.hero.is-fullheight .hero-body.main {
+    display: flex;
+    align-items: stretch;
+    /* align-items: start - difference?? */
+}
+
+#character-page, #combat-page {
+    height: 100%;
+}
+
+.button {
+    font-family: 'Montserrat', sans-serif;
+    background-color: #eee;
+    color: #333;
+    /* box-shadow: 0px 0px 0px #eee;
+    padding-bottom: 15px; */
+    transition-duration: 0.2s;
+}
+
+.button.title:hover {
+    background-color: #333;
+    color: #eee;
+    box-shadow: 0px 0px 6px #eee;
+    padding-bottom: 20px;
+}
+
+.button:hover {
+    background-color: #333;
+    color: #eee;
+    box-shadow: 0px 0px 3px #eee;
+    padding-bottom: 10px;
+}
+
+input {
+    font-family: 'Montserrat', sans-serif;
+    /* box-shadow: 0px 0px 15px #eee; */
+}
+
+label {
+    color: #eee;
+    float: left;
+}
+
+.subtitle {
+    color: #333;
+}
+
+/* .underline {
+    width: 100%;
+    height: 1rem;
+    background: url(./images/Dice/dall-white.svg) repeat-x left bottom;
+    background-size: 2rem;
+} */
+
+.navbar .container {
+    margin: 0;
+}
+
+/* #player-join {
+    background: url(./images/castle-button-baw.jpg);
+    background-size: contain; color: white;
+}
+
+#dm-join {
+    background: url(./images/combat-button.jpg);
+    background-size: contain; color: white;
+} */
+
+#slogan {
+    padding-bottom: 10rem;
+    /* margin-top: -10rem; */
+    color: #eee;
+    text-shadow: 
+        -1px -1px 0 #333,  
+        1px -1px 0 #333,
+        -1px 1px 0 #333,
+        1px 1px 0 #333;
+}
+
+.to-right {
+    text-align: right;
+}
+
+i {
+    margin-top: 0.1rem;
+}
+
+.is-action {
+    /* background-color: #be1124; */
+    background-color: #d12100;
+    color: #eee;
+    /* background-color: #177e89; */
+    /* background-color: #007cc7; */
+}
+
+.is-bonus-action {
+    /* background-color: #770c16; */
+    background-color: #961700;
+    color: #eee;
+    /* background-color: #084c61; */
+    /* background-color: #4da8da; */
+}
+
+.is-movement {
+    /* background-color: #e9ad37; */
+    /* background-color: #f8af00; */
+    background-color: #d89b09;
+    color: #333;
+    /* background-color: #ffc857; */
+    /* background-color: #203647; */
+}
+
+.is-breath {
+    background-color: #187999;
+    color: #eee;
+    /* background-color: #db3a34; */
+    /* background-color: #eefbfb; */
+}
+
+.is-hidden {
+    display: none;
+}
+
+.form-control.subtitle {
+    max-width: 20rem;
+    margin: auto;
+}
+
+/* .character-input {
+    max-width: 20rem;
+    padding-bottom: 1rem;
+}
+
+.character-input .subtitle {
+    word-break: normal;
+    white-space: pre;
+    margin-right: 1rem;
+    width: auto;
+} */
+
+#char-name {
+    max-width: 15rem;
+}
+
+#init-bonus {
+    max-width: 8rem;
+}
+
+.row {
+    margin-bottom: 1em;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    flex-direction: row;
+}
+
+.space-right {
+    margin-right: 1em;
+}
+
+.word-wrap {
+    word-break: normal;
+}
+
+.turn-number {
+    white-space: nowrap;
+}
+
+#char-submit {
+    display: flex;
+    justify-content: right;
+}
+
+.action-dropdown, .bonus-dropdown {
+    margin-right: 0.3em;
+}
+
+.action-desc, .bonus-desc {
+    max-width: 14em;
+}
+
+.notification.is-flex {
+    padding-right: 1.5rem;
+}
+
+.container {
+    height: 100%;
+}
+
+.menu {
+    background-color: #eee;
+}
+
+#room-info {
+    width: auto;
+    position: fixed;
+    z-index: 100;
+    height: auto;
+    top: 0;
+    left: 0;
+    background-color: transparent;
+    color: #eee;
+    overflow-x: hidden;
+    transition: 0.5s;
+    /* padding-top: 60px; */
+    overflow: hidden;
+
+}
+
+#room-info-body, #chat-body, #faq-body {
+    background-color: #222;
+    border-radius: 0 0 1em 0;
+    color: #eee;
+    height: 100vh;
+    border-top: 2px solid #eee;
+    border-right: 2px solid #eee;
+    width: 15rem;
+}
+
+#sidebar-titles {
+    padding: 0;
+}
+
+.sidebar-title {
+    writing-mode: vertical-lr;
+    position: relative;
+    background-color: #222;
+    color: #eee;
+    height: auto;
+    border-radius: 0 0.5em 0.5em 0;
+    overflow: hidden;
+    padding: 1rem 0.1rem 1rem 0.1rem;
+    border-top: 2px solid #eee;
+    border-right: 2px solid #eee;
+    border-bottom: 2px solid #eee;
+}
+
+.subtitle:not(:last-child) {
+    margin-bottom: 0;
+}
+
+.menu-label {
+    color: #eee;
+}
+
+.menu-list a {
+    color: #eee;
+}
+
+.columns {
+    margin: 0;
+}
+
+.columns:last-child {
+    margin-bottom: 0;
+}
+
+.sidebar-title.is-active {
+    box-shadow: -2px 0 0 #222;
+}
+
+/* .button.to-right {
+    margin-bottom: 1rem;
+} */
+
+.under-header {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 1rem;
+}
+
+/* .tile.is-child {
+    padding: .75rem;
+} */
+
+.tags {
+    float: right;
+}
+
+.tile.is-parent {
+    /* TODO: check if best min-width */
+    min-width: 20rem;
+    max-width: 100%;
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
+.hero-body {
+    position: relative;
+}
+
+#version {
+    position: absolute;
+    top: 0;
+    right: 2rem;
+    /* display: flex;
+    align-items: ; */
+    /* top: 0vh; */
+    /* right: 99vw; */
+}
+
+#room-name {
+    text-transform: none;
+}
+
+/* .input#room {
+    text-transform: lowercase;
+} */
+
+#chat-body {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: stretch;
+}
+
+.chat-messages {
+    height: 80vh;
+    flex-grow: 2;
+    width: 100%;
+    overflow-y: scroll;
+    /* overflow-x: hidden; */
+    margin-bottom: 1rem;
+}
+
+.chat-message {
+    /* word-break: break-all; */
+    word-wrap: break-word;
+}
+
+.dropdown-menu {
+    padding-top: 0;
+}
+
+/* width */
+::-webkit-scrollbar {
+    width: 0.5rem;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 0.2rem;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 0.2rem;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #555; 
+}
+
+@import "~@creativebulma/bulma-divider";

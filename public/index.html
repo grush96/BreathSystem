@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Cover - Free Bulma template</title>
+    <link rel="shortcut icon" href="../images/fav_icon.png" type="image/x-icon">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/bulma@0.9.0/css/bulma.min.css" />
+    <link rel="stylesheet" href="main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@700&family=Montserrat:wght@500&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <section class="hero is-fullheight is-default is-bold is-landing">
+        <div class="hero-head">
+            <nav class="navbar">
+                <div class="container">
+                    <div class="navbar-brand">
+                        <a class="navbar-item">
+                            <p class="title">Breath System</p>
+                        </a>
+                        <!-- <span class="navbar-burger burger" data-target="navbarMenu">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </span> -->
+                    </div>
+                    <div id="navbarMenu" class="navbar-menu">
+                        <div class="navbar-end">
+                            <div class="tabs is-right">
+                                <ul>
+                                    <!-- <li class="is-active"><a>Home</a></li>
+                                    <li><a href="">Examples</a></li>
+                                    <li><a href="">Features</a></li>
+                                    <li><a href="">Team</a></li>
+                                    <li><a href="">Help</a></li> -->
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+            <div class="underline"></div>
+        </div>
+        <div class="hero-body">
+            <div class="container" id="version">
+                <div class="dropdown is-right is-hoverable">
+                    <div class="dropdown-trigger">
+                        <div class="tags has-addons">
+                            <span class="tag is-dark">Version</span>
+                            <span class="tag is-info">0.1.0</span>
+                        </div>
+                    </div>
+                    <div class="dropdown-menu" id="dropdown-menu4" role="menu">
+                      <div class="dropdown-content">
+                        <div class="dropdown-item">
+                          <p>You can insert <strong>any type of content</strong> within the dropdown menu.</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+            </div>
+            <div class="container has-text-centered">
+                <!-- <div>
+                    <p class="title" id="slogan">When you need a little more randomness in your life...</p>
+                </div> -->
+                <!-- <div>
+                    <div class="divider">Exemple</div>
+                </div> -->
+                <div class="columns is-vcentered">
+                    <div class="column is-5">
+                        <form action="main.html" id="dm-input">
+                            <div class="form-control"> 
+                                <!-- <h1 type="hidden" class="mb-3 title" name="username" value="DM">DM</h1> -->
+                                <input name="username" id="username" type="hidden" value="DM" readonly>
+                            </div>
+                            <button type="submit" class="button title" id="dm-join">Create Session</button>
+                        </form>
+                    </div>
+                    <!-- <div class="column is-2">
+                        <div class="divider is-vertical is-light"><p class="subtitle is-white">OR</p></div>
+                    </div> -->
+                    <!-- is-offset-1 -->
+                    <div class="column is-5"> 
+                        <form action="main.html">
+                            <div class="form-control subtitle mb-3">
+                                <label for="username">Name</label>
+                                <input class="input mt-3" name="username" id="username" type="text"  autocomplete="off" placeholder="Enter name..."  required>
+                            </div>
+                            <div class="form-control subtitle mb-3">
+                                <label for="room">Room</label>
+                                <input class="input mt-3" name="room" id="room" type="text"  autocomplete="off" placeholder="Enter room #..." required>
+                            </div>
+                            <button type="submit" class="button title mt-3" id="player-join">Join Session</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+
+        <!-- <div class="hero-foot">
+            <div class="container">
+                <div class="tabs is-centered">
+                    <img src="images/Dice/dall-color.svg" height="auto" width="100%" /> -->
+                    <!-- <ul>
+                        <li><a>And this  is the bottom</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div> -->
+    </section>
+    <!-- <script src="../js/bulma.js"></script> -->
+    <script>
+        // TODO: on click or hover either have dropdown menu or message appear on screen
+        // document.getElementById('version').addEventListener("hover", function => {
+
+        // })
+
+        const room = Math.random().toString(36).substr(2, 5);
+        const roomNum = document.createElement('div'); 
+        roomNum.classList.add('form-control');
+        roomNum.innerHTML = `<input type="hidden" name="room" id="room" value="${room}" readonly>`;
+        document.getElementById('dm-input').appendChild(roomNum);
+    </script>
+</body>
+
+</html>

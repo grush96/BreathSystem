@@ -1,0 +1,226 @@
+<!-- TOOLS -->
+<!-- LAN implementation: 192.168.1.223:3000 -->
+<!-- Admin Dashboard: https://admin.socket.io/ -> http://localhost:3000/admin -->
+<!-- https://css-tricks.com/snippets/css/a-guide-to-flexbox/ -->
+<!-- Pictures: pixabay.com, unsplash.com -->
+
+<!-- CURRENT TODO: -->
+<!-- Implement database (need to make sure characters are remove on room closure) -->
+
+<!-- NEXT TODO: -->
+<!-- On click edit character, add back info/allow for overwrite of backend data -->
+<!-- Change all var to let -->
+<!-- Reorganize js code/css code/comment -->
+
+<!-- OTHER TODO: -->
+<!-- Bug test (on phone specifically) -->
+<!-- Run combat test(s) -->
+<!-- Host website (looking into packaging tools) -->
+<!-- Send to Jill/talk to Lance about adventure -->
+<!-- Add info to version tag -->
+<!-- Implement FAQ (likely in navbar or could have this, chat, and room on same side) -->
+<!-- Look at colors/pictures (could fade/transition pictures on to combat and back)-->
+
+<!-- Small Items: -->
+<!-- Move version tag to bottom? -->
+<!-- Could pause combat on turn move -->
+<!-- On body click also close tabs, event stop prop? Just for room info/players?-->
+<!-- Move chat to bottom tab? -->
+<!-- Get Action div to expand to fill reduced space/shrink with extra action -->
+<!-- When action is chosen may make sense to remove next element not last element, test -->
+<!-- Fix distance between dropdown and button similar to in past code? -->
+<!-- Forget preivous names in character creation?? or good? -->
+<!-- Implement Contact (youtube? email?) -->
+<!-- Any other navbar info -->
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Cover - Free Bulma template</title>
+    <link rel="shortcut icon" href="../images/fav_icon.png" type="image/x-icon">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/bulma@0.9.0/css/bulma.min.css" />
+    <link rel="stylesheet" href="main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@700&family=Montserrat:wght@500&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/0b69a58e13.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <section class="hero is-fullheight is-default is-bold is-party">
+        <div class="hero-head">
+            <nav class="navbar">
+                <div class="container">
+                    <div class="navbar-brand">
+                        <a class="navbar-item">
+                            <p class="title">Breath System</p>
+                        </a>
+                        <!-- <span class="navbar-burger burger" data-target="navbarMenu">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </span> -->
+                    </div>
+                    <div id="navbarMenu" class="navbar-menu">
+                        <div class="navbar-end">
+                            <div class="tabs is-right">
+                                <ul>
+                                    <!-- <li class="is-active"><a>Home</a></li>
+                                    <li><a href="">Examples</a></li>
+                                    <li><a href="">Features</a></li>
+                                    <li><a href="">Team</a></li>
+                                    <li><a href="">Help</a></li> -->
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+            <div class="underline"></div>
+        </div>
+        <!--  id="landing-page" -->
+        
+        <div class="hero-body main">
+            <aside class="menu" id="room-info">
+                <div class="columns is-mobile">
+                    <div class="column" id="room-info-body">
+                        <p class="menu-label">Room Number:</p>
+                        <ul class="menu-list">
+                            <li><a id="room-name"></a></li>
+                        </ul>
+                        <p class="menu-label">
+                            Players in Lobby:
+                        </p>
+                        <ul class="menu-list" id="players">
+                            <!-- <li><a>Team Settings</a></li>
+                            <li><a>Invitations</a></li>
+                            <li><a>Cloud Storage Environment Settings</a></li>
+                            <li><a>Authentication</a></li> -->
+                        </ul>
+                    </div>
+                    <div class="column is-hidden" id="chat-body">
+                        <p class="menu-label">
+                            Chat
+                        </p>
+                        <div class="chat-messages"></div>
+                        <div class="chat-form-container">
+                            <form id="chat-form" class="level">
+                                <div class="level-item">
+                                    <input
+                                        class="input"
+                                        id="msg"
+                                        type="text"
+                                        placeholder="Enter Message"
+                                        required
+                                        autocomplete="off"
+                                    />
+                                </div>
+                                <div class="level-item">
+                                    <button class="button">Send</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="column is-hidden" id="faq-body">
+                        <p class="menu-label">Suggested Rules</p>
+                        <p class="menu-label">
+                            Spells
+                        </p>
+                        <ul class="menu-list" id="players">
+                            <li><a>Team Settings</a></li>
+                            <li><a>Invitations</a></li>
+                            <li><a>Cloud Storage Environment Settings</a></li>
+                            <li><a>Authentication</a></li>
+                        </ul>
+                    </div>
+                    <div class="column is-narrow" id="sidebar-titles">
+                        <div class="subtitle sidebar-title is-active" id="room-info-title">Room Info</div>
+                        <div class="subtitle sidebar-title" id="chat-title">Chat</div>
+                        <div class="subtitle sidebar-title" id="faq-title">Rules/FAQ</div>
+                        <!-- Sideways close button, rounded edges -->
+                    </div>
+                </div>
+            </aside>
+            <div class="container" id="character-page">
+                <div class="columns">
+                    <div class="column is-5">
+                        <div class="box">
+                            <p class="title">Characters in Combat</p>
+                            <div class="under-header">
+                                <p class="subtitle">#: <span id="combat-chars">0</span></p> <!-- TODO: count number of child divs -->
+                                <button type="submit" class="button" id="new-character-button">New Character<i class="fas fa-angle-right fa-lg ml-2"></i></button> 
+                            </div>
+                            <ul id="character-desc">
+                                <!-- TODO: consider having placeholder for: characters go here -->
+                                <div class="notification is-dark">
+                                    <a class="button" style="float: right" href="creation.html">Edit</a>
+                                    <p class="is-size-3">Ander</p>
+                                    <p class="is-size-6">Player: Gabe</p>
+                                </div>
+                            </ul>
+                            <button type="submit" class="button dm-button mt-5" id="to-combat">Start Combat<i class="fas fa-angle-down fa-lg ml-2"></i></button>
+                        </div>
+                    </div>
+                    <div class="column is-6 is-offset-1">
+                        <div class="box new-character is-hidden">
+                            <div class="row character-input">
+                                <div class="row">
+                                    <div class="space-right"><p class="subtitle">Name:</p></div>
+                                    <div class="space-right"><input class="input" id="char-name" type="text" placeholder="Character Name..." required></div>
+                                </div>
+                                <div class="row">
+                                    <div class="space-right"><p class="subtitle" style="margin-bottom: 0;">Initiative </p><p class="subtitle">Bonus:</p></div>
+                                    <div class="space-right"><input class="input" id="init-bonus" type="number" placeholder="Dex Mod..." required></div>
+                                </div>
+                            </div>
+                            <!-- <h1 class="mb-3">Turn Order: <span id="total-actions">0</span>/6</h1> -->
+                            <div id="turn"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container is-hidden" id="combat-page">
+                <button class="button dm-button" id="continue-combat" style="float: right">Start Combat</button>
+                <button type="submit" class="button dm-button mb-3" id="to-landing"><span class="mr-2" style="margin-top: 0.1rem;"><i class="fas fa-angle-up fa-lg"></i></span>Back</button>
+                <!-- <button class="button" id="begin-combat">Begin Combat</button> -->
+            </div>
+        </div>
+    </section>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.10.1/qs.min.js" 
+    integrity="sha512-aTKlYRb1QfU1jlF3k+aS4AqTpnTXci4R79mkdie/bp6Xm51O5O3ESAYhvg6zoicj/PD6VYY0XrYwsWLcvGiKZQ==" 
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://raw.githack.com/SortableJS/Sortable/master/Sortable.js"></script>
+    <script src="main.js"></script>
+</body>
+
+</html>
+
+<!-- <div class="tile is-child notification">
+    <p class="title">Chat</p>
+    <div class="chat-messages"></div>
+    <div class="chat-form-container">
+        <form id="chat-form" class="level">
+            <div class="level-item">
+                <input
+                    class="input"
+                    id="msg"
+                    type="text"
+                    placeholder="Enter Message"
+                    required
+                    autocomplete="off"
+                />
+            </div>
+            <div class="level-item">
+                <button class="button">Send</button>
+            </div>
+        </form>
+    </div>
+</div> -->
