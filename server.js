@@ -21,18 +21,12 @@ const io = new Server(httpServer, {
   }
 });
 
-const botName = 'ChatCord Bot';
-
 // Run when client connects
 io.on('connection', socket => {
 	socket.on('joinRoom', ({username, room}) => {
 		const user = userJoin(socket.id, username, room);
 
 		socket.join(user.room);
-
-		// MongoClient.connect(url, function(err,db) {
-
-		// })
 
 		// // Welcome current user
 		// socket.emit('message', formatMessage(botName, 'Welcome to ChatCord!'));
