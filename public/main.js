@@ -27,7 +27,7 @@ socket.on('characterJoin', characters => {
 	        console.log("works so far");
 	        socket.emit('removeChar', playerChar);
 	    };
-	};    
+	};
 });
 
 // Output character to DOM
@@ -214,9 +214,7 @@ continueButton.addEventListener("click", function() {
         if (combat[i].length > 0) {
             console.log(`${combat[i].length} === ${sizeOfTurn[i].length}`);
             if (i !== 0 && combat[i].length === sizeOfTurn[i]) {
-                // TODO: if want to have empty turn after move of contianer simply add specific to beginning of combat 1-5 and check for it
-                const combatContainer = document.querySelector('.is-ancestor.is-warning');
-                combatContainer.appendChild(combatContainer.removeChild(combatContainer.getElementsByClassName('is-parent')[0]));
+                socket.emit('nextSecond');
             }
             const pcAction = combat[i][0];
             const turnID = turns[i];
@@ -451,12 +449,6 @@ for (let i = 1; i <= 6; i++) {
         </div>`
     turnContainer.appendChild(turnDropdown);
 }
-var charButtons = document.createElement('div');
-charButtons.classList.add('under-header');
-charButtons.innerHTML = 
-    `<button class="button" id="char-cancel">Cancel</button>
-    <button class="button" id="char-submit">Submit</button>`;
-turnContainer.appendChild(charButtons);
 
 // Closes all dropdowns if anywhere others than dropdown triggers is clicked,
 // this also includes within the dropdown menus
@@ -470,6 +462,10 @@ Sortable.create(turn, {
     animation: 200,
     group: "shared",
     sort: true,
+    // handle: ".notification:not(.turn-dropdown)",
+    // touchStartThreshold: 100,
+    delay: 20,
+    delayTouchOnly: true,
         
     onSort: function () {
         numberTurns();
@@ -946,6 +942,12 @@ socket.on('newTurn', turnDesc => {
 		div.innerHTML = `<p>${pcAction.init} - ${pcAction.name}: ${pcAction.action}</p>`;
 	}
 	document.getElementById(turnDesc.turnID).appendChild(div);
+});
+
+socket.on('nextSecond', () => {
+    // TODO: if want to have empty turn after move of contianer simply add specific to beginning of combat 1-5 and check for it
+    const combatContainer = document.querySelector('.is-ancestor.is-warning');
+    combatContainer.appendChild(combatContainer.removeChild(combatContainer.getElementsByClassName('is-parent')[0]));
 });
 
 socket.on('combatEnds', () => {
