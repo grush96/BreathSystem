@@ -3,11 +3,13 @@
 <!-- Admin Dashboard: https://admin.socket.io/ -> http://localhost:3000/admin -->
 <!-- https://css-tricks.com/snippets/css/a-guide-to-flexbox/ -->
 <!-- Pictures: pixabay.com, unsplash.com -->
+<!-- breath-system.glitch.me -->
 
 <!-- CURRENT TODO: -->
 <!-- Implement database (need to make sure characters are remove on room closure) -->
 
 <!-- NEXT TODO: -->
+<!-- Figure out how to make secure connection on glitch.me -->
 <!-- On click edit character, add back info/allow for overwrite of backend data -->
 <!-- Change all var to let -->
 <!-- Reorganize js code/css code/comment -->
@@ -157,12 +159,12 @@
                                 <button type="submit" class="button" id="new-character-button">New Character<i class="fas fa-angle-right fa-lg ml-2"></i></button> 
                             </div>
                             <ul id="character-desc">
-                                <!-- TODO: consider having placeholder for: characters go here -->
+                                <!-- TODO: consider having placeholder for: characters go here
                                 <div class="notification is-dark">
                                     <a class="button" style="float: right" href="creation.html">Edit</a>
                                     <p class="is-size-3">Ander</p>
                                     <p class="is-size-6">Player: Gabe</p>
-                                </div>
+                                </div> -->
                             </ul>
                             <button type="submit" class="button dm-button mt-5" id="to-combat">Start Combat<i class="fas fa-angle-down fa-lg ml-2"></i></button>
                         </div>
@@ -181,6 +183,10 @@
                             </div>
                             <!-- <h1 class="mb-3">Turn Order: <span id="total-actions">0</span>/6</h1> -->
                             <div id="turn"></div>
+                            <div class="under-header">
+                                <button class="button" id="char-cancel">Cancel</button>
+                                <button class="button" id="char-submit">Submit</button>
+                            </div>
                         </div>
                     </div>
                 </div>
