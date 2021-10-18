@@ -30,6 +30,10 @@ io.on('connection', socket => {
 
 		socket.join(user.room);
 
+		// MongoClient.connect(url, function(err,db) {
+
+		// })
+
 		// // Welcome current user
 		// socket.emit('message', formatMessage(botName, 'Welcome to ChatCord!'));
 
@@ -85,6 +89,11 @@ io.on('connection', socket => {
 		io.to(user.room).emit("combatBegins");
 	});
 
+	socket.on('nextSecond', () => {
+		const user = getCurrentUser(socket.id);
+		io.to(user.room).emit("nextSecond");
+	});
+
 	socket.on('endCombat', () => {
 		const user = getCurrentUser(socket.id);
 		io.to(user.room).emit("combatEnds");
@@ -118,5 +127,5 @@ instrument(io, { auth: false });
 const PORT = process.env.PORT || 3000;
 
 httpServer.listen(PORT, () => {
-	console.log(`Socket.IO server running at http://localhost:${PORT}/`);
+	console.log(`Server listening at port: ${PORT}`);
 });
