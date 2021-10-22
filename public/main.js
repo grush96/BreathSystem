@@ -169,22 +169,40 @@ socket.on("combatBegins", () => {
     combatOutput.innerHTML = 
         `<div class="tile is-ancestor is-warning row">
             <div class="tile is-parent is-4">
-                <div class="tile is-child box" id="first-second"><p class="title">First Second</p></div>
+                <div class="tile is-child box">
+                    <p class="title">First Second</p>
+                    <div id="first-second"></div>
+                </div>
             </div>
             <div class="tile is-parent is-4">
-                <div class="tile is-child box" id="second-second"><p class="title">Second Second</p></div>
+                <div class="tile is-child box">
+                    <p class="title">Second Second</p>
+                    <div id="second-second"></div>
+                </div>
             </div>
             <div class="tile is-parent is-4">
-                <div class="tile is-child box" id="third-second"><p class="title">Third Second</p></div>
+                <div class="tile is-child box">
+                    <p class="title">Third Second</p>
+                    <div id="third-second"></div>
+                </div>
             </div>
             <div class="tile is-parent is-4">
-                <div class="tile is-child box" id="fourth-second"><p class="title">Fourth Second</p></div>
+                <div class="tile is-child box">
+                    <p class="title">Fourth Second</p>
+                    <div id="fourth-second"></div>
+                </div>
             </div>
             <div class="tile is-parent is-4">                
-                <div class="tile is-child box" id="fifth-second"><p class="title">Fifth Second</p></div>
+                <div class="tile is-child box">
+                    <p class="title">Fifth Second</p>
+                    <div id="fifth-second"></div>
+                </div>
             </div>
             <div class="tile is-parent is-4">
-                <div class="tile is-child box" id="sixth-second"><p class="title">Sixth Second</p></div>
+                <div class="tile is-child box">
+                    <p class="title">Sixth Second</p>
+                    <div id="sixth-second"></div>
+                </div>
             </div>
         </div>`;
     
@@ -337,14 +355,14 @@ for (let i = 1; i <= 6; i++) {
                 </div>
                 <div class="dropdown-menu" id="dropdown-menu-action" role="menu">
                     <div class="dropdown-content base-actions">
-                        <a class="dropdown-item action-option extra-attack">Melee Attack</a>
-                        <a class="dropdown-item action-option extra-attack">Ranged Attack</a>
+                        <a class="dropdown-item action-option extra-attack">Martial Attack</a>
                         <a class="dropdown-item action-option desc">Spell</a>
                         <hr class="dropdown-divider">
                         <a class="dropdown-item to-additional-actions">Additional Actions</a>
                         <hr class="dropdown-divider">
                         <a class="dropdown-item to-optional-actions">Optional Actions</a>
                         <hr class="dropdown-divider">
+                        <a class="dropdown-item action-option desc">Action Surge</a>
                         <a class="dropdown-item action-option desc">Use Item</a>
                         <a class="dropdown-item action-option desc">Other</a>
                     </div>
@@ -465,7 +483,7 @@ Sortable.create(turn, {
     // handle: ".notification:not(.turn-dropdown)",
     // touchStartThreshold: 100,
     delay: 20,
-    delayTouchOnly: true,
+    delayOnTouchOnly: true,
         
     onSort: function () {
         numberTurns();
@@ -799,6 +817,8 @@ document.getElementById('char-cancel').addEventListener("click", function() {
     document.getElementsByClassName('new-character')[0].classList.add('is-hidden');
 });
 
+
+// CURRENT
 document.getElementById('char-submit').addEventListener("click", function() {
     const name = document.getElementById("char-name").value;
     const init = document.getElementById("init-bonus").value;
@@ -818,19 +838,19 @@ document.getElementById('char-submit').addEventListener("click", function() {
                 if (turnOption === "Action") {
                     actionOption = turnChoices[i].getElementsByClassName('action-title')[0].innerText;
                     if (!turnChoices[i].getElementsByClassName('action-desc')[0].classList.contains('is-hidden')) {
-                        actionDesc = turnChoices[i].getElementsByClassName('action-desc')[0].innerText;
+                        actionDesc = turnChoices[i].getElementsByClassName('action-desc')[0].value;
                     }
                     if (turnChoices[i].getElementsByClassName('extra-attack-bool')[0].checked) {
                         turn.push(turnOption);
                     } else {
                         // TODO: figure out exactly how to present (also could push action/bonus option instead)
-                        turn.push(turnOption);
-                        turn.push(turnOption);
+                        turn.push(turnOption + " 1");
+                        turn.push(turnOption + " 2");
                     }
                 } else if (turnOption === "Bonus Action") {
                     bonusOption = turnChoices[i].getElementsByClassName('bonus-title')[0].innerText;
                     if (!turnChoices[i].getElementsByClassName('bonus-desc')[0].classList.contains('is-hidden')) {
-                        bonusDesc = turnChoices[i].getElementsByClassName('bonus-desc')[0].innerText;
+                        bonusDesc = turnChoices[i].getElementsByClassName('bonus-desc')[0].value;
                     }
                     turn.push(turnOption);
                 } else {
@@ -922,26 +942,27 @@ function partySetup(party) {
 };
 
 socket.on('newTurn', turnDesc => {
+    console.log(turnDesc);
 	var div = document.createElement('div');
 	div.classList.add('notification');
 	div.classList.add('is-dark');
 	var pcAction = turnDesc.pcAction;
-	if (pcAction.action === "Action") {
-		if (pcAction.desc.actionDesc === "none") {
-			div.innerHTML = `<p>${pcAction.init} - ${pcAction.name}: ${pcAction.desc.actionOption}</p>`;
+	if (pcAction.action.includes("Action")) {
+		if (pcAction.desc.actionDesc === "None") {
+			div.innerHTML = `<p>${pcAction.init} - ${pcAction.name}: ${pcAction.action}<br/>(${pcAction.desc.actionOption})</p>`;
 		} else {
-			div.innerHTML = `<p>${pcAction.init} - ${pcAction.name}: ${pcAction.desc.actionOption} (${pcAction.desc.actionDesc})</p>`;
+			div.innerHTML = `<p>${pcAction.init} - ${pcAction.name}: ${pcAction.action}<br/>(${pcAction.desc.actionOption}: ${pcAction.desc.actionDesc})</p>`;
 		}
 	} else if (pcAction.action === "Bonus Action") {
-		if (pcAction.desc.bonusDesc === "none") {
-			div.innerHTML = `<p>${pcAction.init} - ${pcAction.name}: ${pcAction.desc.bonusOption}</p>`;
+		if (pcAction.desc.bonusDesc === "None") {
+			div.innerHTML = `<p>${pcAction.init} - ${pcAction.name}: ${pcAction.action}<br/>(${pcAction.desc.bonusOption})</p>`;
 		} else {
-			div.innerHTML = `<p>${pcAction.init} - ${pcAction.name}: ${pcAction.desc.bonusOption} (${pcAction.desc.bonusDesc})</p>`;
+			div.innerHTML = `<p>${pcAction.init} - ${pcAction.name}: ${pcAction.action}<br/>(${pcAction.desc.bonusOption}: ${pcAction.desc.bonusDesc})</p>`;
 		}
 	} else {
 		div.innerHTML = `<p>${pcAction.init} - ${pcAction.name}: ${pcAction.action}</p>`;
 	}
-	document.getElementById(turnDesc.turnID).appendChild(div);
+	document.getElementById(turnDesc.turnID).prepend(div);
 });
 
 socket.on('nextSecond', () => {

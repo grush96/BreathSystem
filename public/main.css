@@ -324,6 +324,8 @@ i {
     max-width: 100%;
     flex-grow: 1;
     flex-shrink: 1;
+    max-height: 55vh;
+    overflow-y: scroll;
 }
 
 .hero-body {
@@ -355,6 +357,10 @@ i {
     align-items: stretch;
 }
 
+#chat-form {
+    max-width: 100%;
+}
+
 .chat-messages {
     height: 80vh;
     flex-grow: 2;
@@ -371,6 +377,11 @@ i {
 
 .dropdown-menu {
     padding-top: 0;
+}
+
+#character-desc {
+    max-height: 55vh;
+    overflow-y: scroll;
 }
 
 /* width */
