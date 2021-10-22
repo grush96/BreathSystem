@@ -959,6 +959,8 @@ socket.on('newTurn', turnDesc => {
 		} else {
 			div.innerHTML = `<p>${pcAction.init} - ${pcAction.name}: ${pcAction.action}<br/>(${pcAction.desc.bonusOption}: ${pcAction.desc.bonusDesc})</p>`;
 		}
+    } else if (pcAction.action === "Movement") {
+        div.innerHTML = `<p>${pcAction.init} - ${pcAction.name}: ${pcAction.action}<br/><input class="input move-dist" type="number" placeholder="ex. 10 ft." required></p>`;
 	} else {
 		div.innerHTML = `<p>${pcAction.init} - ${pcAction.name}: ${pcAction.action}</p>`;
 	}

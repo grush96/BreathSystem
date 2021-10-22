@@ -183,7 +183,7 @@ i {
     max-width: 15rem;
 }
 
-#init-bonus {
+#init-bonus, .move-dist {
     max-width: 8rem;
 }
 
