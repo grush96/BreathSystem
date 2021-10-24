@@ -14,6 +14,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@700&family=Montserrat:wght@500&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/0b69a58e13.js" crossorigin="anonymous"></script>
+    <style>
+
+    </style>
 </head>
 
 <body>
@@ -90,12 +94,34 @@
                     <div class="column is-5"> 
                         <form action="main.html">
                             <div class="form-control subtitle mb-3">
-                                <label for="username">Name</label>
-                                <input class="input mt-3" name="username" id="username" type="text"  autocomplete="off" placeholder="Enter name..."  required>
+                                <div class="field">
+                                    <label for="username">Name</label>
+                                    <div class="control has-icons-left has-icons-right">
+                                        <input class="input" name="username" id="username" type="text" autocomplete="off" placeholder="Enter name..."  required>
+                                        <span class="icon is-small is-left">
+                                            <i class="fas fa-dragon"></i>
+                                        </span>
+                                        <span class="icon is-small has-text-danger is-right is-hidden">
+                                            <i class="fas fa-exclamation-triangle"></i>
+                                        </span>
+                                    </div>
+                                    <p class="help is-danger is-hidden">Please enter name</p>
+                                </div>
                             </div>
                             <div class="form-control subtitle mb-3">
-                                <label for="room">Room</label>
-                                <input class="input mt-3" name="room" id="room" type="text"  autocomplete="off" placeholder="Enter room #..." required>
+                                <div class="field">
+                                    <label for="room">Room</label>
+                                    <div class="control has-icons-left has-icons-right">
+                                        <input class="input" name="room" id="room" type="text"  autocomplete="off" placeholder="Enter room #..." required>
+                                        <span class="icon is-small is-left">
+                                            <i class="fas fa-dungeon"></i>
+                                        </span>
+                                        <span class="icon is-small has-text-danger is-right is-hidden">
+                                            <i class="fas fa-exclamation-triangle"></i>
+                                        </span>
+                                    </div>
+                                    <p class="help is-danger is-hidden">Please enter room</p>
+                                </div>
                             </div>
                             <button type="submit" class="button title mt-3" id="player-join">Join Session</button>
                         </form>
@@ -118,16 +144,53 @@
     </section>
     <!-- <script src="../js/bulma.js"></script> -->
     <script>
-        // TODO: on click or hover either have dropdown menu or message appear on screen
-        // document.getElementById('version').addEventListener("hover", function => {
-
-        // })
-
         const room = Math.random().toString(36).substr(2, 5);
         const roomNum = document.createElement('div'); 
         roomNum.classList.add('form-control');
         roomNum.innerHTML = `<input type="hidden" name="room" id="room" value="${room}" readonly>`;
         document.getElementById('dm-input').appendChild(roomNum);
+
+        // TODO: also include check for room existence 
+        document.getElementById('player-join').addEventListener("click", function(event) {
+            const nameField = document.getElementsByClassName('input')[0];
+            const roomField = document.getElementsByClassName('input')[1];
+
+            const nameValid = validateField(nameField);
+            const roomValid = validateField(roomField);
+
+            if (!nameValid || !roomValid) {
+                event.preventDefault();
+            }
+        });
+
+        document.querySelector('.input#username').addEventListener("focusout", function() {
+            const nameField = document.getElementsByClassName('input')[0];
+            validateField(nameField);
+        });
+
+        document.querySelector('.input#room').addEventListener("focusout", function() {
+            const roomField = document.getElementsByClassName('input')[1];
+            validateField(roomField);
+        });
+
+        function validateField(field) {
+            let valid = true;
+            if (!field.value) {
+                valid = false;
+                // roomField.style.backgroundColor = "#FF9785";
+                // roomField.style.borderColor = "#D12100"
+                field.classList.add('is-danger');
+                field.parentElement.getElementsByClassName('is-right')[0].classList.remove('is-hidden');
+                field.parentElement.parentElement.getElementsByClassName('help')[0].classList.remove('is-hidden');
+            } else {
+                // roomField.style.backgroundColor = "#fff";
+                // roomField.style.borderColor = "#dbdbdb";
+                field.classList.remove('is-danger');
+                field.parentElement.getElementsByClassName('is-right')[0].classList.add('is-hidden');
+                field.parentElement.parentElement.getElementsByClassName('help')[0].classList.add('is-hidden');
+            }
+            return valid;
+        }
     </script>
 </body>
 

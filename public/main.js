@@ -122,9 +122,14 @@ function resetActionContainer(actionContainer) {
     actionContainer.getElementsByClassName('optional-actions')[0].classList.add('is-hidden');
     actionContainer.getElementsByClassName('base-actions')[0].classList.remove('is-hidden');
     actionContainer.getElementsByClassName('action-desc')[0].classList.add('is-hidden');
-    actionContainer.getElementsByClassName('action-desc')[0].value = "";
+    actionContainer.getElementsByClassName('action-input')[0].value = "";
     actionContainer.getElementsByClassName('action-extra')[0].classList.add('is-hidden');
     actionContainer.getElementsByClassName('extra-attack-bool')[0].checked = false;
+    const actionSurge = document.getElementsByClassName('action-surge')[0];
+    if (actionSurge) {
+        actionSurge.parentNode.removeChild(actionSurge);
+        numberTurns();
+    }
 }
 
 function resetBonusContainer(bonusContainer) {
@@ -138,7 +143,7 @@ function resetBonusContainer(bonusContainer) {
     bonusContainer.getElementsByClassName('optional-bonus')[0].classList.add('is-hidden');
     bonusContainer.getElementsByClassName('base-bonus')[0].classList.remove('is-hidden');
     bonusContainer.getElementsByClassName('bonus-desc')[0].classList.add('is-hidden');
-    bonusContainer.getElementsByClassName('bonus-desc')[0].value = "";
+    bonusContainer.getElementsByClassName('bonus-input')[0].value = "";
 }
 
 function enableLandingButton() {
@@ -167,41 +172,100 @@ socket.on("combatBegins", () => {
     combatOutput.classList.add('block');
     combatOutput.classList.add('combat-output');
     combatOutput.innerHTML = 
-        `<div class="tile is-ancestor is-warning row">
+        `<div class="tile is-parent is-12">
+            <div class="tile box is-child is-hidden">
+                <p class="title has-text-centered">End of Round <span id="round-num">1</span></p>
+            </div>
+        </div>
+        <div class="tile is-ancestor is-warning row">
             <div class="tile is-parent is-4">
-                <div class="tile is-child box">
-                    <p class="title">First Second</p>
-                    <div id="first-second"></div>
+                <div class="card tile is-child">
+                    <header class="card-header">
+                        <p class="card-header-title">First Second</p>
+                        <block class="card-header-icon turn-toggle" aria-label="more options">
+                            <span class="icon">
+                                <i class="fas fa-angle-down" aria-hidden="true"></i>
+                            </span>
+                        </block>
+                    </header>
+                    <div class="card-content">
+                        <div id="first-second"></div>
+                    </div>
                 </div>
             </div>
             <div class="tile is-parent is-4">
-                <div class="tile is-child box">
-                    <p class="title">Second Second</p>
-                    <div id="second-second"></div>
+                <div class="card tile is-child is-hidden">
+                    <header class="card-header">
+                        <p class="card-header-title">Sixth Second</p>
+                        <block class="card-header-icon turn-toggle" aria-label="more options">
+                            <span class="icon">
+                                <i class="fas fa-angle-down" aria-hidden="true"></i>
+                            </span>
+                        </block>
+                    </header>
+                    <div class="card-content">
+                        <div id="sixth-second"></div>
+                    </div>
                 </div>
             </div>
             <div class="tile is-parent is-4">
-                <div class="tile is-child box">
-                    <p class="title">Third Second</p>
-                    <div id="third-second"></div>
+                <div class="card tile is-child is-hidden">
+                    <header class="card-header">
+                        <p class="card-header-title">Fifth Second</p>
+                        <block class="card-header-icon turn-toggle" aria-label="more options">
+                            <span class="icon">
+                                <i class="fas fa-angle-down" aria-hidden="true"></i>
+                            </span>
+                        </block>
+                    </header>
+                    <div class="card-content">
+                        <div id="fifth-second"></div>
+                    </div>
                 </div>
             </div>
             <div class="tile is-parent is-4">
-                <div class="tile is-child box">
-                    <p class="title">Fourth Second</p>
-                    <div id="fourth-second"></div>
-                </div>
-            </div>
-            <div class="tile is-parent is-4">                
-                <div class="tile is-child box">
-                    <p class="title">Fifth Second</p>
-                    <div id="fifth-second"></div>
+                <div class="card tile is-child is-hidden">
+                    <header class="card-header">
+                        <p class="card-header-title">Fourth Second</p>
+                        <block class="card-header-icon turn-toggle" aria-label="more options">
+                            <span class="icon">
+                                <i class="fas fa-angle-down" aria-hidden="true"></i>
+                            </span>
+                        </block>
+                    </header>
+                    <div class="card-content">
+                        <div id="fourth-second"></div>
+                    </div>
                 </div>
             </div>
             <div class="tile is-parent is-4">
-                <div class="tile is-child box">
-                    <p class="title">Sixth Second</p>
-                    <div id="sixth-second"></div>
+                <div class="card tile is-child is-hidden">
+                    <header class="card-header">
+                        <p class="card-header-title">Third Second</p>
+                        <block class="card-header-icon turn-toggle" aria-label="more options">
+                            <span class="icon">
+                                <i class="fas fa-angle-down" aria-hidden="true"></i>
+                            </span>
+                        </block>
+                    </header>
+                    <div class="card-content">
+                        <div id="third-second"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="tile is-parent is-4">
+                <div class="card tile is-child is-hidden">
+                    <header class="card-header">
+                        <p class="card-header-title">Second Second</p>
+                        <block class="card-header-icon turn-toggle" aria-label="more options">
+                            <span class="icon">
+                                <i class="fas fa-angle-down" aria-hidden="true"></i>
+                            </span>
+                        </block>
+                    </header>
+                    <div class="card-content">
+                        <div id="second-second"></div>
+                    </div>
                 </div>
             </div>
         </div>`;
@@ -214,11 +278,25 @@ socket.on("combatBegins", () => {
 
     enableLandingButton();
     disableDMButtons();
+    enableTurnDropdowns();
 
     if (username === "DM") {
-		document.getElementById("continue-combat").classList.remove('is-hidden');
+		document.getElementById('continue-combat').classList.remove('is-hidden');
 	}
 });
+
+function enableTurnDropdowns() {
+    let turnToggle = document.getElementsByClassName('turn-toggle');
+    for (let i = 0; i < turnToggle.length; i++) {
+        console.log("for loop");
+        turnToggle[i].addEventListener("click", function(event) {
+            console.log("click");
+            let targetElement = event.target || event.srcElement;
+            console.log(targetElement);
+            findAncestor(targetElement, '.card').getElementsByClassName('card-content')[0].classList.toggle('is-hidden');
+        });
+    }
+}
 
 // TODO: may need to make into function to add to "on combat"
 var continueButton = document.getElementById('continue-combat'); 
@@ -230,7 +308,6 @@ continueButton.addEventListener("click", function() {
     }
     for (let i = 0; i < 6; i++) { 
         if (combat[i].length > 0) {
-            console.log(`${combat[i].length} === ${sizeOfTurn[i].length}`);
             if (i !== 0 && combat[i].length === sizeOfTurn[i]) {
                 socket.emit('nextSecond');
             }
@@ -347,8 +424,11 @@ for (let i = 1; i <= 6; i++) {
             <div class="dropdown action-dropdown">
                 <div class="dropdown-trigger">
                     <button class="button" aria-haspopup="true" aria-controls="dropdown-menu-action">
+                        <span class="icon is-small is-left is-hidden">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </span>
                         <span class="action-title">Choose Action</span>
-                        <span class="icon is-small">
+                        <span class="icon is-small is-right">
                             <i class="fas fa-angle-down" aria-hidden="true"></i>
                         </span>
                     </button>
@@ -362,7 +442,7 @@ for (let i = 1; i <= 6; i++) {
                         <hr class="dropdown-divider">
                         <a class="dropdown-item to-optional-actions">Optional Actions</a>
                         <hr class="dropdown-divider">
-                        <a class="dropdown-item action-option desc">Action Surge</a>
+                        <a class="dropdown-item action-option surge">Action Surge</a>
                         <a class="dropdown-item action-option desc">Use Item</a>
                         <a class="dropdown-item action-option desc">Other</a>
                     </div>
@@ -403,18 +483,35 @@ for (let i = 1; i <= 6; i++) {
                 </div>
             </div>
             <!--  required -->
-            <input class="input action-desc is-hidden" type="text" placeholder="??" autocomplete="off" />
+            
+            <div class="field action-desc is-hidden">
+                <div class="control has-icons-left has-icons-right">
+                <input class="input action-input" type="text" placeholder="??" autocomplete="off" />
+                    <span class="icon is-small is-left">
+                        <i class="fas fa-scroll"></i>
+                    </span>
+                    <span class="icon is-small has-text-danger is-right is-hidden">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </span>
+                </div>
+                <p class="help is-hidden">Please enter description</p>
+            </div>
             <label class="checkbox action-extra is-hidden">
                 <input type="checkbox" class="extra-attack-bool">
                 Extra Attack
             </label>
+            </br>
+            <p class="help action-note is-hidden">Please choose a specific action</p>
         </div>
         <div class="bonus-dropdowns is-hidden">
             <div class="dropdown bonus-dropdown">
                 <div class="dropdown-trigger">
                     <button class="button" aria-haspopup="true" aria-controls="dropdown-menu-bonus">
+                        <span class="icon is-small is-left is-hidden">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </span>
                         <span class="bonus-title">Choose Bonus Action</span>
-                        <span class="icon is-small">
+                        <span class="icon is-small is-right">
                             <i class="fas fa-angle-down" aria-hidden="true"></i>
                         </span>
                     </button>
@@ -463,7 +560,19 @@ for (let i = 1; i <= 6; i++) {
                     </div>
                 </div>
             </div>
-            <input class="input bonus-desc is-hidden" type="text" placeholder="??" autocomplete="off" /> 
+            <div class="field bonus-desc is-hidden">
+                <div class="control has-icons-left has-icons-right">
+                    <input class="input bonus-input" type="text" placeholder="??" autocomplete="off" /> 
+                    <span class="icon is-small is-left">
+                        <i class="fas fa-scroll"></i>
+                    </span>
+                    <span class="icon is-small has-text-danger is-right is-hidden">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </span>
+                </div>
+                <p class="help is-hidden">Please enter description</p>
+            </div>
+            <p class="help bonus-note is-hidden">Please choose a specific bonus action</p>
         </div>`
     turnContainer.appendChild(turnDropdown);
 }
@@ -526,6 +635,7 @@ for (let i = 0; i < turnChoices.length; i++) {
             }
             turnContainer.className = "notification row is-action";
             actionDropdowns.classList.remove('is-hidden');
+            watchActionChoice(turnContainer);
         } else if (turnTitle === "Bonus Action") {
             if (turns.getElementsByClassName('is-bonus-action')[0] 
                     && turnContainer.className !== "notification row is-bonus-action") {
@@ -535,6 +645,7 @@ for (let i = 0; i < turnChoices.length; i++) {
             }
             turnContainer.className = "notification row is-bonus-action";
             bonusDropdowns.classList.remove('is-hidden');
+            watchBonusChoice(turnContainer);
         } else if (turnTitle === "Movement") {
             turnContainer.className = "notification row is-movement";
         } else if (turnTitle === "Breath") {
@@ -618,10 +729,32 @@ for (let i = 0; i < actionChoices.length; i++) {
         var turnContainer = actionDropdown.parentElement;
         turnContainer.getElementsByClassName('action-extra')[0].classList.add("is-hidden");
         turnContainer.getElementsByClassName('action-desc')[0].classList.add("is-hidden");
+        const actionSurge = document.getElementsByClassName('action-surge')[0];
+        if (actionSurge) {
+            actionSurge.parentNode.removeChild(actionSurge);
+            numberTurns();
+        }
         if (targetElement.classList.contains('extra-attack')) {
             turnContainer.getElementsByClassName('action-extra')[0].classList.remove("is-hidden");
         } else if (targetElement.classList.contains('desc')) {
             turnContainer.getElementsByClassName('action-desc')[0].classList.remove("is-hidden");
+        } else if (targetElement.classList.contains('surge')) {
+            const actionSurge = document.createElement('div');
+            actionSurge.classList.add('notification');
+            actionSurge.classList.add('row');
+            actionSurge.classList.add('is-action');
+            actionSurge.classList.add('action-surge');
+            actionSurge.innerHTML = `<p class="subtitle space-right"><span class="turn-number">2.</span></p>
+                                    <p class="subtitle turn-title">Action Surge</p>`;
+            findAncestor(targetElement, '.notification.row').insertAdjacentElement('afterend', actionSurge);
+            numberTurns();
+        }
+
+        if (turnContainer.getElementsByClassName('action-title')[0].innerText !== "Choose Action") {
+            validActions = false;
+            turnContainer.querySelectorAll('button')[0].classList.remove('is-danger');
+            turnContainer.getElementsByClassName('action-note')[0].classList.add('is-hidden');
+            turnContainer.getElementsByClassName('is-left')[0].classList.add('is-hidden');
         }
     });
 }
@@ -727,6 +860,13 @@ for (let i = 0; i < bonusChoices.length; i++) {
         if (targetElement.classList.contains('desc')) {
             turnContainer.getElementsByClassName('bonus-desc')[0].classList.remove("is-hidden");
         }
+
+        if (turnContainer.getElementsByClassName('bonus-title')[0].innerText !== "Choose Bonus Action") {
+            validActions = false;
+            turnContainer.querySelectorAll('button')[0].classList.remove('is-danger');
+            turnContainer.getElementsByClassName('bonus-note')[0].classList.add('is-hidden');
+            turnContainer.getElementsByClassName('is-left')[0].classList.add('is-hidden');
+        }
     });
 }
 
@@ -779,10 +919,10 @@ function numberTurns() {
             turnChoices[i].parentElement.parentElement.classList.add('is-hidden');
             turnChoices[i].innerText = turnNumber;
         } else {
-            // TODO: once all divs have dropdowns can remove first check, add check for extra action, make sure works without change too (choose turn below)
             if (turnChoices[i].parentElement.parentElement.getElementsByClassName('turn-title')[0] 
                 && turnChoices[i].parentElement.parentElement.getElementsByClassName('turn-title')[0].innerText === "Action" 
-                && !turnChoices[i].parentElement.parentElement.getElementsByClassName('extra-attack-bool')[0].checked) {
+                && !turnChoices[i].parentElement.parentElement.getElementsByClassName('extra-attack-bool')[0].checked
+                && turnChoices[i].parentElement.parentElement.getElementsByClassName('action-title')[0].innerText !== "Action Surge") {
                 turnChoices[i].innerText = turnNumber + "-" + (turnNumber + 1) + ".";
                 turnNumber++;
             } else {
@@ -817,56 +957,146 @@ document.getElementById('char-cancel').addEventListener("click", function() {
     document.getElementsByClassName('new-character')[0].classList.add('is-hidden');
 });
 
-
-// CURRENT
 document.getElementById('char-submit').addEventListener("click", function() {
-    const name = document.getElementById("char-name").value;
-    const init = document.getElementById("init-bonus").value;
-    if (name === '' || init === '') {
-        window.alert("Please enter character name and/or initiative bonus.");
-    } else {
-        const character = { name, init };
-        var turn = [];
-        var actionOption = "None";
-        var bonusOption = "None";
-        var actionDesc = "None";
-        var bonusDesc = "None";
-        const turnChoices = document.getElementById('turn').querySelectorAll('.notification.row');
-        for (let i = 0; i < turnChoices.length; i++) {
-            if (!turnChoices[i].classList.contains('is-hidden')) {
-                const turnOption = turnChoices[i].getElementsByClassName('turn-title')[0].innerText;
-                if (turnOption === "Action") {
-                    actionOption = turnChoices[i].getElementsByClassName('action-title')[0].innerText;
-                    if (!turnChoices[i].getElementsByClassName('action-desc')[0].classList.contains('is-hidden')) {
-                        actionDesc = turnChoices[i].getElementsByClassName('action-desc')[0].value;
-                    }
-                    if (turnChoices[i].getElementsByClassName('extra-attack-bool')[0].checked) {
+    const nameField = document.getElementById("char-name");
+    const initField = document.getElementById("init-bonus");
+
+    const nameValid = validateField(nameField);
+    const initValid = validateField(initField);
+    const actionContainer = document.getElementsByClassName('is-action')[0];
+    const bonusContainer = document.getElementsByClassName('is-bonus-action')[0];
+    let validActions = true;
+
+
+    if (actionContainer) {
+        if (actionContainer.getElementsByClassName('action-title')[0].innerText === "Choose Action") {
+            validActions = false;
+            actionContainer.querySelectorAll('button')[1].classList.add('is-danger');
+            actionContainer.getElementsByClassName('action-note')[0].classList.remove('is-hidden');
+            actionContainer.getElementsByClassName('is-left')[0].classList.remove('is-hidden');
+        } else {
+            actionContainer.querySelectorAll('button')[1].classList.remove('is-danger');
+            actionContainer.getElementsByClassName('action-note')[0].classList.add('is-hidden');
+            actionContainer.getElementsByClassName('is-left')[0].classList.add('is-hidden');
+        }
+        const actionDesc = actionContainer.getElementsByClassName('action-desc')[0];
+        if (!actionDesc.classList.contains('is-hidden')) {
+            validateField(actionDesc.getElementsByClassName('action-input')[0]);
+        }
+    }
+    // TODO: ensure if action/bonus is hidden does not result in unsubmittable form
+    if (bonusContainer) {
+        if (bonusContainer.getElementsByClassName('bonus-title')[0].innerText === "Choose Bonus Action") {
+            validActions = false;
+            bonusContainer.querySelectorAll('button')[2].classList.add('is-danger');
+            bonusContainer.getElementsByClassName('bonus-note')[0].classList.remove('is-hidden');
+            bonusContainer.getElementsByClassName('is-left')[1].classList.remove('is-hidden');
+        } else {
+            bonusContainer.querySelectorAll('button')[2].classList.remove('is-danger');
+            bonusContainer.getElementsByClassName('bonus-note')[0].classList.add('is-hidden');
+            bonusContainer.getElementsByClassName('is-left')[1].classList.add('is-hidden');
+        }
+        const bonusDesc = bonusContainer.getElementsByClassName('bonus-desc')[0];
+        if (!bonusDesc.classList.contains('is-hidden')) {
+            validateField(bonusDesc.getElementsByClassName('bonus-input')[0]);
+        }
+    }
+
+    if (nameValid && initValid && validActions) {
+        const name = nameField.value;
+        const init = initField.value;
+        if (name === '' || init === '') {
+            window.alert("Please enter character name and/or initiative bonus.");
+        } else {
+            const character = { name, init };
+            var turn = [];
+            var actionOption = "None";
+            var bonusOption = "None";
+            var actionDesc = "None";
+            var bonusDesc = "None";
+            const turnChoices = document.getElementById('turn').querySelectorAll('.notification.row');
+            for (let i = 0; i < turnChoices.length; i++) {
+                if (!turnChoices[i].classList.contains('is-hidden')) {
+                    const turnOption = turnChoices[i].getElementsByClassName('turn-title')[0].innerText;
+                    if (turnOption === "Action") {
+                        actionOption = turnChoices[i].getElementsByClassName('action-title')[0].innerText;
+                        if (!turnChoices[i].getElementsByClassName('action-desc')[0].classList.contains('is-hidden')) {
+                            actionDesc = turnChoices[i].getElementsByClassName('action-input')[0].value;
+                        }
+                        // CURRENT: add action surge condition
+                        if (turnChoices[i].getElementsByClassName('extra-attack-bool')[0].checked) {
+                            turn.push(turnOption);
+                        } else {
+                            // TODO: figure out exactly how to present (also could push action/bonus option instead)
+                            turn.push(turnOption + " 1");
+                            turn.push(turnOption + " 2");
+                        }
+                    } else if (turnOption === "Bonus Action") {
+                        bonusOption = turnChoices[i].getElementsByClassName('bonus-title')[0].innerText;
+                        if (!turnChoices[i].getElementsByClassName('bonus-desc')[0].classList.contains('is-hidden')) {
+                            bonusDesc = turnChoices[i].getElementsByClassName('bonus-input')[0].value;
+                        }
                         turn.push(turnOption);
                     } else {
-                        // TODO: figure out exactly how to present (also could push action/bonus option instead)
-                        turn.push(turnOption + " 1");
-                        turn.push(turnOption + " 2");
+                        turn.push(turnOption);
                     }
-                } else if (turnOption === "Bonus Action") {
-                    bonusOption = turnChoices[i].getElementsByClassName('bonus-title')[0].innerText;
-                    if (!turnChoices[i].getElementsByClassName('bonus-desc')[0].classList.contains('is-hidden')) {
-                        bonusDesc = turnChoices[i].getElementsByClassName('bonus-desc')[0].value;
-                    }
-                    turn.push(turnOption);
-                } else {
-                    turn.push(turnOption);
                 }
             }
-        }
-        const additional = { actionOption, bonusOption, actionDesc, bonusDesc };
-        console.log("character: " + character.name + " " + character.init);
-        console.log("turn: " + turn);
-        console.log("additional: " + additional.actionOption + " " + additional.bonusOption);
-        socket.emit('addChar', { character, turn, additional });
+            const additional = { actionOption, bonusOption, actionDesc, bonusDesc };
+            console.log("character: " + character.name + " " + character.init);
+            console.log("turn: " + turn);
+            console.log("additional: " + additional.actionOption + " " + additional.bonusOption);
+            socket.emit('addChar', { character, turn, additional });
 
-        document.getElementsByClassName('new-character')[0].classList.add('is-hidden');
+            document.getElementsByClassName('new-character')[0].classList.add('is-hidden');
+        }
     }
 });
+
+document.getElementById("char-name").addEventListener("focusout", function() {
+    validateField(document.getElementById("char-name"));
+});
+
+document.getElementById("init-bonus").addEventListener("focusout", function() {
+    validateField(document.getElementById("init-bonus"));
+});
+
+function watchActionChoice(actionContainer) {
+    actionContainer.getElementsByClassName('action-desc')[0].addEventListener("focusout", function() {
+        const actionDesc = actionContainer.getElementsByClassName('action-desc')[0];
+        if (!actionDesc.classList.contains('is-hidden')) {
+            validateField(actionDesc.getElementsByClassName('action-input')[0]);
+        }
+    });
+}
+
+function watchBonusChoice(bonusContainer) {
+    bonusContainer.getElementsByClassName('bonus-desc')[0].addEventListener("focusout", function() {
+        const bonusDesc = bonusContainer.getElementsByClassName('bonus-desc')[0];
+        if (!bonusDesc.classList.contains('is-hidden')) {
+            validateField(bonusDesc.getElementsByClassName('bonus-input')[0]);
+        }
+    });
+}
+
+function validateField(field) {
+    let valid = true;
+    if (!field.value) {
+        valid = false;
+        // roomField.style.backgroundColor = "#FF9785";
+        // roomField.style.borderColor = "#D12100"
+        field.classList.add('is-danger');
+        field.parentElement.getElementsByClassName('is-right')[0].classList.remove('is-hidden');
+        field.parentElement.parentElement.getElementsByClassName('help')[0].classList.remove('is-hidden');
+    } else {
+        // roomField.style.backgroundColor = "#fff";
+        // roomField.style.borderColor = "#dbdbdb";
+        field.classList.remove('is-danger');
+        field.parentElement.getElementsByClassName('is-right')[0].classList.add('is-hidden');
+        field.parentElement.parentElement.getElementsByClassName('help')[0].classList.add('is-hidden');
+    }
+    return valid;
+}
 
 // SIDEBARS
 // Room Info Sidebar
@@ -964,16 +1194,20 @@ socket.on('newTurn', turnDesc => {
 	} else {
 		div.innerHTML = `<p>${pcAction.init} - ${pcAction.name}: ${pcAction.action}</p>`;
 	}
+    console.log(turnDesc);
 	document.getElementById(turnDesc.turnID).prepend(div);
 });
 
 socket.on('nextSecond', () => {
     // TODO: if want to have empty turn after move of contianer simply add specific to beginning of combat 1-5 and check for it
     const combatContainer = document.querySelector('.is-ancestor.is-warning');
-    combatContainer.appendChild(combatContainer.removeChild(combatContainer.getElementsByClassName('is-parent')[0]));
+    combatContainer.prepend(combatContainer.removeChild(combatContainer.getElementsByClassName('is-parent')[5]));
+    combatContainer.getElementsByClassName('card')[0].classList.remove('is-hidden');
+    combatContainer.getElementsByClassName('card-content')[1].classList.add('is-hidden');
 });
 
 socket.on('combatEnds', () => {
+    document.querySelector('.tile.box').classList.remove('is-hidden');
 	if (username === "DM") {
 		document.getElementById("continue-combat").classList.add('is-hidden');
 	} else {

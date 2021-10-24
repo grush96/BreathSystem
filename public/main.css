@@ -19,6 +19,11 @@ body {
     color: #eee;
 }
 
+.help {
+    text-align: left;
+    width: 100%;
+}
+
 .hero.is-combat {
     background: url(./images/castle-main.jpg) no-repeat center center;
     background-size: cover;
@@ -179,12 +184,16 @@ i {
     width: auto;
 } */
 
+.notification.is-dark {
+    margin: 0.3rem;
+}
+
 #char-name {
     max-width: 15rem;
 }
 
 #init-bonus, .move-dist {
-    max-width: 8rem;
+    max-width: 9rem;
 }
 
 .row {
@@ -255,7 +264,7 @@ i {
     height: 100vh;
     border-top: 2px solid #eee;
     border-right: 2px solid #eee;
-    width: 15rem;
+    width: 16rem;
 }
 
 #sidebar-titles {
@@ -325,6 +334,14 @@ i {
     flex-grow: 1;
     flex-shrink: 1;
     max-height: 55vh;
+    align-items: flex-start;
+}
+
+.card {
+    border-radius: 6px;
+}
+
+.card-content {
     overflow-y: scroll;
 }
 

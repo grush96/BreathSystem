@@ -113,19 +113,14 @@
                         <div class="chat-messages"></div>
                         <div class="chat-form-container">
                             <form id="chat-form" class="level">
-                                <div class="level-item">
-                                    <input
-                                        class="input"
-                                        id="msg"
-                                        type="text"
-                                        placeholder="Enter Message"
-                                        required
-                                        autocomplete="off"
-                                    />
-                                </div>
-                                <div class="level-item">
-                                    <button class="button">Send</button>
-                                </div>
+                                <div class="field has-addons">
+                                    <div class="control">
+                                        <input class="input" id="msg" type="text" placeholder="Enter Message" required autocomplete="off"/>
+                                    </div>
+                                    <div class="control">
+                                      <a class="button is-info">Send</a>
+                                    </div>
+                                  </div>
                             </form>
                         </div>
                     </div>
@@ -174,11 +169,37 @@
                             <div class="row character-input">
                                 <div class="row">
                                     <div class="space-right"><p class="subtitle">Name:</p></div>
-                                    <div class="space-right"><input class="input" id="char-name" type="text" placeholder="Character Name..." required></div>
+                                    <div class="space-right">
+                                        <div class="field">
+                                            <div class="control has-icons-left has-icons-right">
+                                                <input class="input" id="char-name" type="text" placeholder="Character Name..." required>
+                                                <span class="icon is-small is-left">
+                                                    <i class="fas fa-ghost"></i>
+                                                </span>
+                                                <span class="icon is-small has-text-danger is-right is-hidden">
+                                                    <i class="fas fa-exclamation-triangle"></i>
+                                                </span>
+                                            </div>
+                                            <p class="help is-danger is-hidden">Please enter character name</p>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="row">
                                     <div class="space-right"><p class="subtitle" style="margin-bottom: 0;">Initiative </p><p class="subtitle">Bonus:</p></div>
-                                    <div class="space-right"><input class="input" id="init-bonus" type="number" placeholder="Dex Mod..." required></div>
+                                    <div class="space-right">
+                                        <div class="field">
+                                            <div class="control has-icons-left has-icons-right">
+                                                <input class="input" id="init-bonus" type="number" placeholder="Mod..." required>
+                                                <span class="icon is-small is-left">
+                                                    <i class="fas fa-dice-d20"></i>
+                                                </span>
+                                                <span class="icon is-small has-text-danger is-right is-hidden">
+                                                    <i class="fas fa-exclamation-triangle"></i>
+                                                </span>
+                                            </div>
+                                            <p class="help is-danger is-hidden">Please enter init bonus</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <!-- <h1 class="mb-3">Turn Order: <span id="total-actions">0</span>/6</h1> -->
