@@ -16,7 +16,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@700&family=Montserrat:wght@500&display=swap" rel="stylesheet">
     <script src="https://kit.fontawesome.com/0b69a58e13.js" crossorigin="anonymous"></script>
     <style>
-
+        label {
+            text-shadow: 
+                -2px -2px 10px #000, 
+                2px -2px 10px #000, 
+                -2px 2px 10px #000, 
+                2px 2px 10px #000;
+        }
     </style>
 </head>
 
@@ -95,7 +101,7 @@
                         <form action="main.html">
                             <div class="form-control subtitle mb-3">
                                 <div class="field">
-                                    <label for="username">Name</label>
+                                    <label for="username">Player Name</label>
                                     <div class="control has-icons-left has-icons-right">
                                         <input class="input" name="username" id="username" type="text" autocomplete="off" placeholder="Enter name..."  required>
                                         <span class="icon is-small is-left">
@@ -110,9 +116,9 @@
                             </div>
                             <div class="form-control subtitle mb-3">
                                 <div class="field">
-                                    <label for="room">Room</label>
+                                    <label for="room">Room Code</label>
                                     <div class="control has-icons-left has-icons-right">
-                                        <input class="input" name="room" id="room" type="text"  autocomplete="off" placeholder="Enter room #..." required>
+                                        <input class="input" name="room" id="room" type="text"  autocomplete="off" placeholder="Enter room..." required>
                                         <span class="icon is-small is-left">
                                             <i class="fas fa-dungeon"></i>
                                         </span>
@@ -144,10 +150,16 @@
     </section>
     <!-- <script src="../js/bulma.js"></script> -->
     <script>
-        const room = Math.random().toString(36).substr(2, 5);
+        // const room = Math.random().toString(36).substr(2, 5);
+        const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+        var roomCode = "";
+        for (let i = 0; i < 4; i++) {
+            roomCode += randomLetter();
+        }
+
         const roomNum = document.createElement('div'); 
         roomNum.classList.add('form-control');
-        roomNum.innerHTML = `<input type="hidden" name="room" id="room" value="${room}" readonly>`;
+        roomNum.innerHTML = `<input type="hidden" name="room" id="room" value="${roomCode}" readonly>`;
         document.getElementById('dm-input').appendChild(roomNum);
 
         // TODO: also include check for room existence 
@@ -173,18 +185,18 @@
             validateField(roomField);
         });
 
+        function randomLetter() {
+            return alphabet[Math.floor(Math.random() * alphabet.length)];
+        }
+
         function validateField(field) {
             let valid = true;
             if (!field.value) {
                 valid = false;
-                // roomField.style.backgroundColor = "#FF9785";
-                // roomField.style.borderColor = "#D12100"
                 field.classList.add('is-danger');
                 field.parentElement.getElementsByClassName('is-right')[0].classList.remove('is-hidden');
                 field.parentElement.parentElement.getElementsByClassName('help')[0].classList.remove('is-hidden');
             } else {
-                // roomField.style.backgroundColor = "#fff";
-                // roomField.style.borderColor = "#dbdbdb";
                 field.classList.remove('is-danger');
                 field.parentElement.getElementsByClassName('is-right')[0].classList.add('is-hidden');
                 field.parentElement.parentElement.getElementsByClassName('help')[0].classList.add('is-hidden');

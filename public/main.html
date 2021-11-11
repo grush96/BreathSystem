@@ -92,7 +92,7 @@
             <aside class="menu" id="room-info">
                 <div class="columns is-mobile">
                     <div class="column" id="room-info-body">
-                        <p class="menu-label">Room Number:</p>
+                        <p class="menu-label">Room Code:</p>
                         <ul class="menu-list">
                             <li><a id="room-name"></a></li>
                         </ul>
@@ -150,7 +150,14 @@
                         <div class="box">
                             <p class="title">Characters in Combat</p>
                             <div class="under-header">
-                                <p class="subtitle">#<span id="combat-chars">0</span></p> <!-- TODO: count number of child divs -->
+                                <p class="subtitle">Round <span id="round-num">1</span></p>
+                                <button type="submit" class="button dm-button" id="reset-round-button">Reset Round</button> 
+                            </div>
+                            <div class="under-header">
+                                <div>
+                                    <p class="subtitle">Ready: <span id="ready-chars">0</span>/<span id="combat-chars">0</span></p>
+                                    <p class="help is-danger is-hidden" id="combat-help">Not all characters ready</p>
+                                </div>
                                 <button type="submit" class="button" id="new-character-button">New Character<i class="fas fa-angle-right fa-lg ml-2"></i></button> 
                             </div>
                             <ul id="character-desc">
@@ -215,7 +222,11 @@
             <div class="container is-hidden" id="combat-page">
                 <button class="button dm-button" id="continue-combat" style="float: right">Start Combat</button>
                 <button type="submit" class="button dm-button mb-3" id="to-landing"><span class="mr-2" style="margin-top: 0.1rem;"><i class="fas fa-angle-up fa-lg"></i></span>Back</button>
-                <!-- <button class="button" id="begin-combat">Begin Combat</button> -->
+                <div class="columns">
+                    <div class="block column" id="combat-output"></div>
+                    <div class="block column" id="character-output"></div>
+                    <!-- <div class="block column dm-button" id="character-removal"></div> -->
+                </div>
             </div>
         </div>
     </section>
@@ -229,25 +240,3 @@
 </body>
 
 </html>
-
-<!-- <div class="tile is-child notification">
-    <p class="title">Chat</p>
-    <div class="chat-messages"></div>
-    <div class="chat-form-container">
-        <form id="chat-form" class="level">
-            <div class="level-item">
-                <input
-                    class="input"
-                    id="msg"
-                    type="text"
-                    placeholder="Enter Message"
-                    required
-                    autocomplete="off"
-                />
-            </div>
-            <div class="level-item">
-                <button class="button">Send</button>
-            </div>
-        </form>
-    </div>
-</div> -->

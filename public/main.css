@@ -34,6 +34,10 @@ body {
     padding: 1rem 1rem 1rem 1rem;
 }
 
+#character-desc > .notification {
+    margin: 0.5rem 0.25rem 0.5rem 0.25rem;
+}
+
 .hero-head {
     font-family: 'Libre Baskerville', serif;
     /* background-color: #eee; */
@@ -61,6 +65,7 @@ body {
     /* box-shadow: 0px 0px 0px #eee;
     padding-bottom: 15px; */
     transition-duration: 0.2s;
+    margin-bottom: 0.5rem;
 }
 
 .button.title:hover {
@@ -188,6 +193,10 @@ i {
     margin: 0.3rem;
 }
 
+.checkbox:hover {
+    color: inherit;
+}
+
 #char-name {
     max-width: 15rem;
 }
@@ -221,7 +230,7 @@ i {
     justify-content: right;
 }
 
-.action-dropdown, .bonus-dropdown {
+.turn-dropdown, .action-dropdown, .bonus-dropdown {
     margin-right: 0.3em;
 }
 
@@ -319,6 +328,10 @@ i {
     padding-bottom: 1rem;
 }
 
+/* p.subtitle.space-right {
+    height: inherit;
+} */
+
 /* .tile.is-child {
     padding: .75rem;
 } */
@@ -341,7 +354,8 @@ i {
     border-radius: 6px;
 }
 
-.card-content {
+.card-content.second-card {
+    max-height: 45vh;
     overflow-y: scroll;
 }
 
@@ -394,6 +408,10 @@ i {
 
 .dropdown-menu {
     padding-top: 0;
+}
+
+.dropdown-content {
+    margin-top: -0.4rem;
 }
 
 #character-desc {

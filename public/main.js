@@ -2,7 +2,7 @@ var { username, room } = Qs.parse(location.search, {
 	ignoreQueryPrefix: true
 });
 
-room = room.toLowerCase();
+room = room.toUpperCase();
 
 const socket = io();
 
@@ -11,58 +11,231 @@ socket.emit('joinRoom', { username, room });
 
 // LANDING PAGE
 // Get room and users
-socket.on('roomUsers', ({ room, users }) => {
+socket.on('roomUsers', async (users) => {
 	outputRoomName(room);
 	outputUsers(users);
+});
+
+socket.on("joinedChat", async () => {
+    let result = await fetch("http://localhost:3000/rooms?room=" + room).then(response => response.json());
+    let messages = result.messages;
+    
+    const div = document.createElement('div');
+    div.classList.add('notification');
+    div.classList.add('is-dark');
+    div.classList.add('chat-message');
+    div.innerHTML = `<p>Welcome to room ${room}</p>`;
+    document.querySelector('.chat-messages').appendChild(div);
+
+    for (let i = 0; i < messages.length; i++) {
+        const div = document.createElement('div');
+        div.classList.add('notification');
+        div.classList.add('is-dark');
+        div.classList.add('chat-message');
+        div.innerHTML = `<p>${messages[i].name}: ${messages[i].text}</p>`;
+        document.querySelector('.chat-messages').appendChild(div);
+    };
 });
 
 disableDMButtons();
 
 // New character from server
-socket.on('characterJoin', characters => {
+socket.on('characterJoin', async (characters) => {
+    console.log("client characters: " + characters);
 	outputCharacter(characters);
+    countReady();
 	// Allow for removal of character from combat
-	if (document.getElementById("remove-char")) {
-	    document.getElementById("remove-char").onclick = function() {
-	        console.log("works so far");
-	        socket.emit('removeChar', playerChar);
-	    };
-	};
+    // TODO: may not be necessary
+	// if (document.getElementById("remove-char")) {
+	//     document.getElementById("remove-char").onclick = function() {
+	//         console.log("works so far");
+	//         socket.emit('removeChar', playerChar);
+	//     };
+	// };
 });
 
 // Output character to DOM
 function outputCharacter(characters) {
 	const characterList = document.getElementById('character-desc');
+    characterList.innerHTML = '';
 	const characterNum = document.getElementById('combat-chars');
-	characterList.innerHTML = `
-		${characters.map(playerChar => 
-			`<div class="notification is-dark">
-				<a class="button edit-character" style="float: right">Edit</a>
-				<p class="is-size-3 char-name">${playerChar.character.name}</p>
-				<a class="button remove-char" style="float: right">Remove</a>
-				<div class="remove-info" type="hidden" room="${playerChar.user.room}" 
-					id="${playerChar.user.id}" name="${playerChar.character.name}"
-                    player="${playerChar.user.username}"></div>
-				<p class="is-size-6">Player: ${playerChar.user.username}</p>
-			</div>`
-		).join('')}
-	`;
+    for (let i = 0; i < characters.length; i++) {
+        const playerChar = characters[i];
+        let characterOutput = document.createElement('div');
+        characterOutput.classList.add('notification');
+        characterOutput.classList.add(playerChar.user.color);
+        if (playerChar.user.ready) {
+            characterOutput.innerHTML = 
+                `<label class="checkbox ready" style="float: right">
+                    Ready
+                    <input type="checkbox" class="ready-bool" checked>
+                </label>
+                <p class="is-size-3 char-name">${playerChar.character.name}</p>
+                <a class="button remove-char" style="float: right">Remove</a>
+                <a class="button edit-char" style="float: right">Edit</a>
+                <div class="remove-info" type="hidden" room="${playerChar.user.room}" 
+                    id="${playerChar.user.id}" name="${playerChar.character.name}"
+                    player="${playerChar.user.name}"></div>
+                <p class="is-size-6">Player: ${playerChar.user.name}</p>`
+        } else {
+            characterOutput.innerHTML = 
+                `<label class="checkbox ready" style="float: right">
+                    Ready
+                    <input type="checkbox" class="ready-bool">
+                </label>
+                <p class="is-size-3 char-name">${playerChar.character.name}</p>
+                <a class="button remove-char" style="float: right">Remove</a>
+                <a class="button edit-char" style="float: right">Edit</a>
+                <div class="remove-info" type="hidden" room="${playerChar.user.room}" 
+                    id="${playerChar.user.id}" name="${playerChar.character.name}"
+                    player="${playerChar.user.name}"></div>
+                <p class="is-size-6">Player: ${playerChar.user.name}</p>`
+        }
+        characterList.appendChild(characterOutput);
+    }
+	// characterList.innerHTML = `
+	// 	${characters.map(playerChar => 
+	// 		`<div class="notification ${playerChar.user.color}">
+	// 			<label class="checkbox ready" style="float: right">
+    //                 Ready
+    //                 <input type="checkbox" class="ready-bool">
+    //             </label>
+	// 			<p class="is-size-3 char-name">${playerChar.character.name}</p>
+	// 			<a class="button remove-char" style="float: right">Remove</a>
+    //             <a class="button edit-char" style="float: right">Edit</a>
+	// 			<div class="remove-info" type="hidden" room="${playerChar.user.room}" 
+	// 				id="${playerChar.user.id}" name="${playerChar.character.name}"
+    //                 player="${playerChar.user.name}"></div>
+	// 			<p class="is-size-6">Player: ${playerChar.user.name}</p>
+	// 		</div>`
+	// 	).join('')}
+	// `;
+
+    // `<div class="notification ${playerChar.user.color}">
+	// 			<a class="button edit-char" style="float: right">Edit</a>
+	// 			<p class="is-size-3 char-name">${playerChar.character.name}</p>
+	// 			<a class="button remove-char" style="float: right">Remove</a>
+	// 			<div class="remove-info" type="hidden" room="${playerChar.user.room}" 
+	// 				id="${playerChar.user.id}" name="${playerChar.character.name}"
+    //                 player="${playerChar.user.name}"></div>
+	// 			<p class="is-size-6">Player: ${playerChar.user.name}</p>
+	// 		</div>`
 
 	characterNum.innerText = characterList.children.length;
     
-    const playerButtons = document.getElementsByClassName('edit-character');
+    const playerButtons = document.getElementsByClassName('edit-char');
     for (let i = 0; i < playerButtons.length; i++) {
-        const owner = playerButtons[i].nextElementSibling
-            .nextElementSibling.nextElementSibling.getAttribute('player');
+        const owner = playerButtons[i].nextElementSibling.getAttribute('player');
         console.log(`${username} !== ${owner}`)
         if (username !== owner) {
             playerButtons[i].classList.add('is-hidden');
         }
     }
+
+    let editButtons = document.getElementsByClassName('edit-char');
+    
+    for (let i = 0; i < editButtons.length; i++) {
+        editButtons[i].addEventListener("click", function() {
+            console.log("works");
+            const info = editButtons[i].nextElementSibling;
+            const room = info.getAttribute('room');
+            const id = info.getAttribute('id');
+            const name = info.getAttribute('name');
+            socket.emit("getChar", ({room, id, name}));
+             
+            socket.on("getCharResponse", function(char) {
+                console.log(char);
+                document.getElementById("char-name").value = char.character.name;
+                document.getElementById("init-bonus").value = char.character.init;
+                if (document.getElementsByClassName('extra-action')[0]) {
+                    const extraAction = document.getElementsByClassName('extra-action')[0];
+                    extraAction.parentNode.removeChild(extraAction);
+                }
+                var turns = document.getElementById('turn').childNodes;
+                for (let j = 0; j < turns.length - 1; j++) {
+                    resetBaseContainer(turns[j]);
+                    resetActionContainer(turns[j]);
+                    resetBonusContainer(turns[j]);
+                }
+                numberTurns();
+                let turnNum = 0
+                for (let j = 0; j < char.turn.length; j++) {
+                    let turnContainer = document.getElementById('turn').children[turnNum];
+                    var turnChoices = turnContainer.getElementsByClassName('turn-option');
+                    if (char.turn[j] === "Movement") {
+                        turnContainer.getElementsByClassName('turn-title')[0].innerText = char.turn[j];
+                        turnContainer.className = "notification row is-movement";
+                        turnChoices[4].classList.remove('is-active');
+                        turnChoices[2].classList.add('is-active');
+                    } else if (char.turn[j] === "Breath") {
+                        turnContainer.getElementsByClassName('turn-title')[0].innerText = char.turn[j];
+                        turnContainer.className = "notification row is-breath";
+                        turnChoices[4].classList.remove('is-active');
+                        turnChoices[3].classList.add('is-active');
+                    } else if (char.turn[j] === "Bonus Action") {
+                        turnContainer.getElementsByClassName('turn-title')[0].innerText = char.turn[j];
+                        var bonusDropdowns = turnContainer.getElementsByClassName('bonus-dropdowns')[0];
+                        turnContainer.className = "notification row is-bonus-action";
+                        turnChoices[4].classList.remove('is-active');
+                        turnChoices[1].classList.add('is-active');
+                        bonusDropdowns.classList.remove('is-hidden');
+                        bonusDropdowns.getElementsByClassName('bonus-title')[0].innerText = char.additional.bonusOption;
+                        if (char.additional.bonusOption === "Spell" || char.additional.bonusOption === "Use Item" || char.additional.bonusOption === "Other") {
+                            bonusDropdowns.getElementsByClassName('bonus-desc')[0].classList.remove('is-hidden');
+                            bonusDropdowns.getElementsByClassName('bonus-input')[0].value = char.additional.bonusDesc;
+                        }
+                        watchBonusChoice(turnContainer);
+                    } else if (char.turn[j] === "Action 1" || char.turn[j] === "Action") {
+                        turnContainer.getElementsByClassName('turn-title')[0].innerText = "Action";
+                        var actionDropdowns = turnContainer.getElementsByClassName('action-dropdowns')[0];
+                        turnContainer.className = "notification row is-action";
+                        turnChoices[4].classList.remove('is-active');
+                        turnChoices[0].classList.add('is-active');
+                        actionDropdowns.classList.remove('is-hidden');
+                        actionDropdowns.getElementsByClassName('action-title')[0].innerText = char.additional.actionOption;
+                        if (char.additional.actionOption === "Spell" || char.additional.actionOption === "Use Item" || char.additional.actionOption === "Other") {
+                            actionDropdowns.getElementsByClassName('action-desc')[0].classList.remove('is-hidden');
+                            actionDropdowns.getElementsByClassName('action-input')[0].value = char.additional.actionDesc;
+                        } else if (char.additional.actionOption === "Martial Attack") {
+                            actionDropdowns.getElementsByClassName('action-extra')[0].classList.remove('is-hidden');
+                            if (char.turn.includes("Extra Attack")) {
+                                console.log("yep");
+                                actionDropdowns.getElementsByClassName('extra-attack-bool')[0].checked = true; 
+                            }
+                        }
+                        watchActionChoice(turnContainer);
+                    } else if (char.turn[j] === "Action 2") {
+                        turnNum--;
+                    } else if (char.turn[j] === "Extra Attack") {
+                        const extraAction = document.createElement('div');
+                        extraAction.classList.add('notification');
+                        extraAction.classList.add('row');
+                        extraAction.classList.add('is-action');
+                        extraAction.classList.add('extra-action');
+                        extraAction.innerHTML = `<p class="subtitle space-right"><span class="turn-number">2.</span></p>
+                                                <p class="subtitle turn-title">Extra Attack</p>`;
+                        turnContainer.insertAdjacentElement('beforeBegin', extraAction);
+                    } else if (char.turn[j] === "Action Surge") {
+                        const actionSurge = document.createElement('div');
+                        actionSurge.classList.add('notification');
+                        actionSurge.classList.add('row');
+                        actionSurge.classList.add('is-action');
+                        actionSurge.classList.add('action-surge');
+                        actionSurge.innerHTML = `<p class="subtitle space-right"><span class="turn-number">2.</span></p>
+                                                <p class="subtitle turn-title">Action Surge</p>`;
+                        turnContainer.insertAdjacentElement('beforeBegin', actionSurge);
+                    }
+                    turnNum++;
+                }
+                numberTurns();
+                document.getElementsByClassName('new-character')[0].classList.remove('is-hidden');
+            });
+        });
+    }
     
     const pdButtons = document.getElementsByClassName('remove-char');
     for (let i = 0; i < pdButtons.length; i++) {
-        const owner = pdButtons[i].nextElementSibling.getAttribute('player');
+        const owner = pdButtons[i].nextElementSibling.nextElementSibling.getAttribute('player');
         if (username !== owner && username != "DM") {
             pdButtons[i].classList.add('is-hidden');
         }
@@ -72,14 +245,59 @@ function outputCharacter(characters) {
 
 	for(let i = 0; i < removeButton.length; i++) {
 		removeButton[i].addEventListener("click", function() {
-			const info = removeButton[i].nextElementSibling;
+            console.log("remove works");
+			const info = removeButton[i].nextElementSibling.nextElementSibling;
 			const room = info.getAttribute('room');
 			const id = info.getAttribute('id');
 			const name = info.getAttribute('name');
+            console.log("room: " + room);
+            console.log("id: " + id);
+            console.log("name: " + name);
 			console.log("this works");
 			socket.emit('removeChar', ({room, id, name}));
 		});
 	}
+
+    let readyChecks = document.getElementsByClassName('ready');
+    for (let i = 0; i < readyChecks.length; i++) {
+        const info = readyChecks[i].nextElementSibling.nextElementSibling
+                        .nextElementSibling.nextElementSibling;
+        const owner = info.getAttribute('player');
+        if (username !== owner && username != "DM") {
+            readyChecks[i].classList.add('is-hidden');
+        }
+        readyChecks[i].addEventListener("click", function() {
+            socket.emit("charReady", owner, info.getAttribute('name'), 
+                readyChecks[i].getElementsByClassName('ready-bool')[0].checked);
+        });
+    }
+}
+
+socket.on("charReadyResponse", ({username, charName, ready}) => {
+    const info = document.querySelector(`[player="${username}"][name="${charName}"]`);
+    console.log("info: " + info);
+    let readyBool = info.parentElement.getElementsByClassName('ready-bool')[0];
+    readyBool.checked = ready;
+
+    countReady();
+});
+
+function countReady() {
+    const readyBools = document.getElementsByClassName('ready-bool');
+    let sum = 0;
+
+    for (let i = 0; i < readyBools.length; i++) {
+        if (readyBools[i].checked) {
+            sum++;
+        }
+    }
+
+    let readyCount = document.getElementById('ready-chars');
+    readyCount.innerText = sum;
+
+    if (sum >= parseInt(document.getElementById('combat-chars').innerText)) {
+        document.getElementById('combat-help').classList.add('is-hidden');
+    }
 }
 
 // TODO: use as template for edit character button (but use info)
@@ -89,6 +307,10 @@ document.getElementById('new-character-button').addEventListener("click", functi
     if (document.getElementsByClassName('extra-action')[0]) {
         const extraAction = document.getElementsByClassName('extra-action')[0];
         extraAction.parentNode.removeChild(extraAction);
+    }
+    if (document.getElementsByClassName('action-surge')[0]) {
+        const actionSurge = document.getElementsByClassName('action-surge')[0];
+        actionSurge.parentNode.removeChild(actionSurge);
     }
     var turns = document.getElementById('turn').childNodes;
     for (let i = 0; i < turns.length - 1; i++) {
@@ -149,6 +371,7 @@ function resetBonusContainer(bonusContainer) {
 function enableLandingButton() {
 	document.getElementById('to-landing').addEventListener("click", function() {
 		console.log("back button pressed");
+        countReady();
 		if (username === "DM") {
 			socket.emit('endCombat');
 		}
@@ -158,27 +381,48 @@ function enableLandingButton() {
 	});
 }
 
-document.getElementById('to-combat').addEventListener("click", function() {
-	socket.emit("beginCombat");
-	socket.emit('getParty', room);
+document.getElementById('reset-round-button').addEventListener("click", function() {
+    socket.emit("setRound", 1);
 });
 
-socket.on("combatBegins", () => {
+document.getElementById('to-combat').addEventListener("click", function() {
+    const readyCharacters = parseInt(document.getElementById('ready-chars').innerText);
+    const totalCharacters = parseInt(document.getElementById('combat-chars').innerText);
+    if (readyCharacters < totalCharacters) {
+        document.getElementById('combat-help').classList.remove('is-hidden');
+    } else {
+        socket.emit("beginCombat");
+	    socket.emit('getParty', room);
+        const readyBools = document.getElementsByClassName('ready-bool');
+        for (let i = 0; i < readyBools.length; i++) {
+            readyBools[i].checked = false;
+        }
+        const newRound = parseInt(document.getElementById('round-num').innerText) + 1;
+        socket.emit("setRound", newRound);
+    }
+});
+
+socket.on("setRoundResponse", (roundNum) => {
+    document.getElementById('round-num').innerText = roundNum;
+    if (document.getElementById('round-num-banner')) {
+        document.getElementById('round-num-banner').innerText = roundNum - 1;
+    }
+});
+
+socket.on("combatBegins", async() => {
 	var combatPage = document.getElementById('combat-page');
     document.getElementById('character-page').classList.add('is-hidden');
     combatPage.classList.remove('is-hidden');
     
-    var combatOutput = document.createElement('div');
-    combatOutput.classList.add('block');
-    combatOutput.classList.add('combat-output');
+    let combatOutput = document.getElementById('combat-output');
     combatOutput.innerHTML = 
         `<div class="tile is-parent is-12">
             <div class="tile box is-child is-hidden">
-                <p class="title has-text-centered">End of Round <span id="round-num">1</span></p>
+                <p class="title has-text-centered">End of Round <span id="round-num-banner">1</span></p>
             </div>
         </div>
         <div class="tile is-ancestor is-warning row">
-            <div class="tile is-parent is-4">
+            <div class="tile is-parent is-12">
                 <div class="card tile is-child">
                     <header class="card-header">
                         <p class="card-header-title">First Second</p>
@@ -188,13 +432,13 @@ socket.on("combatBegins", () => {
                             </span>
                         </block>
                     </header>
-                    <div class="card-content">
+                    <div class="card-content second-card">
                         <div id="first-second"></div>
                     </div>
                 </div>
             </div>
-            <div class="tile is-parent is-4">
-                <div class="card tile is-child is-hidden">
+            <div class="tile is-parent is-12 is-hidden">
+                <div class="card tile is-child">
                     <header class="card-header">
                         <p class="card-header-title">Sixth Second</p>
                         <block class="card-header-icon turn-toggle" aria-label="more options">
@@ -203,13 +447,13 @@ socket.on("combatBegins", () => {
                             </span>
                         </block>
                     </header>
-                    <div class="card-content">
+                    <div class="card-content second-card">
                         <div id="sixth-second"></div>
                     </div>
                 </div>
             </div>
-            <div class="tile is-parent is-4">
-                <div class="card tile is-child is-hidden">
+            <div class="tile is-parent is-12 is-hidden">
+                <div class="card tile is-child">
                     <header class="card-header">
                         <p class="card-header-title">Fifth Second</p>
                         <block class="card-header-icon turn-toggle" aria-label="more options">
@@ -218,13 +462,13 @@ socket.on("combatBegins", () => {
                             </span>
                         </block>
                     </header>
-                    <div class="card-content">
+                    <div class="card-content second-card">
                         <div id="fifth-second"></div>
                     </div>
                 </div>
             </div>
-            <div class="tile is-parent is-4">
-                <div class="card tile is-child is-hidden">
+            <div class="tile is-parent is-12 is-hidden">
+                <div class="card tile is-child">
                     <header class="card-header">
                         <p class="card-header-title">Fourth Second</p>
                         <block class="card-header-icon turn-toggle" aria-label="more options">
@@ -233,13 +477,13 @@ socket.on("combatBegins", () => {
                             </span>
                         </block>
                     </header>
-                    <div class="card-content">
+                    <div class="card-content second-card">
                         <div id="fourth-second"></div>
                     </div>
                 </div>
             </div>
-            <div class="tile is-parent is-4">
-                <div class="card tile is-child is-hidden">
+            <div class="tile is-parent is-12 is-hidden">
+                <div class="card tile is-child">
                     <header class="card-header">
                         <p class="card-header-title">Third Second</p>
                         <block class="card-header-icon turn-toggle" aria-label="more options">
@@ -248,13 +492,13 @@ socket.on("combatBegins", () => {
                             </span>
                         </block>
                     </header>
-                    <div class="card-content">
+                    <div class="card-content second-card">
                         <div id="third-second"></div>
                     </div>
                 </div>
             </div>
-            <div class="tile is-parent is-4">
-                <div class="card tile is-child is-hidden">
+            <div class="tile is-parent is-12 is-hidden">
+                <div class="card tile is-child">
                     <header class="card-header">
                         <p class="card-header-title">Second Second</p>
                         <block class="card-header-icon turn-toggle" aria-label="more options">
@@ -263,18 +507,105 @@ socket.on("combatBegins", () => {
                             </span>
                         </block>
                     </header>
-                    <div class="card-content">
+                    <div class="card-content second-card">
                         <div id="second-second"></div>
                     </div>
                 </div>
             </div>
         </div>`;
     
-    console.log(combatPage);
-    if (combatPage.getElementsByClassName('combat-output')[0]) {
-        combatPage.removeChild(combatPage.getElementsByClassName('combat-output')[0]);
+    let characterOutput = document.getElementById('character-output');
+    characterOutput.innerHTML = "";
+    let result = await fetch("http://localhost:3000/rooms?room=" + room).then(response => response.json());
+    let userChars;
+    if (result) {
+		userChars = result.characters.filter(character => {
+            console.log("character: " + character);
+			return character.user.name === username;
+		});
+	}
+    console.log("userChars: " + userChars);
+    for (let i = 0; i < userChars.length; i++) {
+        console.log("in print out phase");
+        const userChar = userChars[i];
+        let charCard = document.createElement('div');
+        charCard.classList.add('card');
+        charCard.innerHTML = 
+            `<header class="card-header">
+                <p class="card-header-title">${userChar.character.name}</p>
+                <block class="card-header-icon turn-toggle" aria-label="more options">
+                    <span class="icon">
+                        <i class="fas fa-angle-down" aria-hidden="true"></i>
+                    </span>
+                </block>
+            </header>
+            <div class="card-content is-hidden"></div>`;
+
+        characterOutput.appendChild(charCard);
+        
+        for (let j = 0; j < 6; j++) {
+            let charSecond = document.createElement('div');
+            charSecond.classList.add('notification');
+            if (userChar.turn[j].startsWith("Action")) {
+                charSecond.classList.add("is-action");
+                if (userChar.additional.actionDesc !== "None") {
+                    charSecond.innerHTML = `<p class="subtitle">${j + 1}. ${userChar.turn[j]}: 
+                        ${userChar.additional.actionOption} - ${userChar.additional.actionDesc}</p>`
+                } else {
+                    charSecond.innerHTML = `<p class="subtitle">${j + 1}. ${userChar.turn[j]}: 
+                        ${userChar.additional.actionOption}</p>`
+                }
+            } else if (userChar.turn[j] === "Extra Attack" || userChar.turn[j] === "Action Surge") {
+                charSecond.classList.add("is-action");
+                charSecond.innerHTML = `<p class="subtitle">${j + 1}. ${userChar.turn[j]}</p>`
+            } else if (userChar.turn[j] === "Bonus Action") {
+                charSecond.classList.add("is-bonus-action");
+                if (userChar.additional.bonusDesc !== "None") {
+                    charSecond.innerHTML = `<p class="subtitle">${j + 1}. ${userChar.turn[j]}: 
+                        ${userChar.additional.bonusOption} - ${userChar.additional.bonusDesc}</p>`
+                } else {
+                    charSecond.innerHTML = `<p class="subtitle">${j + 1}. ${userChar.turn[j]}: 
+                        ${userChar.additional.bonusOption}</p>`
+                }
+            } else if (userChar.turn[j] === "Movement") {
+                charSecond.classList.add("is-movement");
+                charSecond.innerHTML = `<p class="subtitle">${j + 1}. ${userChar.turn[j]}: 
+                    <input class="input move-dist" type="number" placeholder="ex. 10 ft." required></p>`
+            } else if (userChar.turn[j] === "Breath") {
+                charSecond.classList.add("is-breath");
+                charSecond.innerHTML = `<p class="subtitle">${j + 1}. ${userChar.turn[j]}</p>`
+            } else {
+                charSecond.innerHTML = `<p class="subtitle">${j + 1}. ${userChar.turn[j]}</p>`
+            }
+            charCard.getElementsByClassName('card-content')[i].appendChild(charSecond);
+        }
     }
-    combatPage.appendChild(combatOutput);
+    characterOutput.getElementsByClassName('card-content')[0].classList.remove('is-hidden');
+    
+    // console.log(combatPage);
+    // if (combatPage.getElementsByClassName('combat-output')[0]) {
+    //     combatPage.removeChild(combatPage.getElementsByClassName('combat-output')[0]);
+    // }
+    // combatPage.appendChild(combatOutput);
+
+    // <div class="notification">
+    //                 <p class="subtitle">1. ${userChar.turn[0]}</p>
+    //             </div>
+    //             <div class="notification">
+    //                 <p class="subtitle">2. ${userChar.turn[1]}</p>
+    //             </div>
+    //             <div class="notification">
+    //                 <p class="subtitle">3. ${userChar.turn[2]}</p>
+    //             </div>
+    //             <div class="notification">
+    //                 <p class="subtitle">4. ${userChar.turn[3]}</p>
+    //             </div>
+    //             <div class="notification">
+    //                 <p class="subtitle">5. ${userChar.turn[4]}</p>
+    //             </div>
+    //             <div class="notification">
+    //                 <p class="subtitle">6. ${userChar.turn[5]}</p>
+    //             </div>
 
     enableLandingButton();
     disableDMButtons();
@@ -302,7 +633,6 @@ function enableTurnDropdowns() {
 var continueButton = document.getElementById('continue-combat'); 
 continueButton.addEventListener("click", function() {
     const turns = [ "first-second", "second-second", "third-second", "fourth-second", "fifth-second", "sixth-second"];
-    console.log(sizeOfTurn);
     if (continueButton.innerText === "Start Combat" || continueButton.innerText === "Next Second") {
         continueButton.innerText = "Continue Combat";
     }
@@ -326,8 +656,6 @@ continueButton.addEventListener("click", function() {
     }
 });
 
-// CURRENT
-
 // Add room name to DOM
 function outputRoomName(room) {
 	document.getElementById('room-name').innerText = room;
@@ -338,7 +666,7 @@ function outputUsers(users) {
 	const userList = document.getElementById('players');
 	userList.innerHTML = `
 		${users.map(user => 
-			`<li><a class="player-name">${user.username}</a></li>`
+			`<li><a class="player-name">${user.name}</a></li>`
 		).join('')}
 	`;
 }
@@ -355,8 +683,10 @@ function disableDMButtons() {
 }
 
 // Message from server
-socket.on('message', message => {
-	outputMessage(message);
+socket.on('message', ({username, msg, color}) => {
+    console.log(username);
+    console.log(msg);
+	outputMessage(username, msg, color);
 
 	// Scroll down
 	const chatMessages = document.querySelector('.chat-messages');
@@ -372,7 +702,7 @@ chatForm.addEventListener('submit', e => {
 	const msg = e.target.elements.msg.value;
 
 	// Emit message to server
-	socket.emit('chatMessage', msg);
+	socket.emit('chatMessage', username, msg);
 
 	// Clear input
 	e.target.elements.msg.value = '';
@@ -380,12 +710,12 @@ chatForm.addEventListener('submit', e => {
 });
 
 // Output message to DOM
-function outputMessage(message) {
+function outputMessage(username, text, color) {
 	const div = document.createElement('div');
 	div.classList.add('notification');
-	div.classList.add('is-dark');
+	div.classList.add(color);
     div.classList.add('chat-message');
-	div.innerHTML = `<p>${message.username}: ${message.text}</p>`;
+	div.innerHTML = `<p>${username}: ${text}</p>`;
 	document.querySelector('.chat-messages').appendChild(div);
 	// <p class="text">
 	//     ${message.text}
@@ -401,7 +731,7 @@ for (let i = 1; i <= 6; i++) {
     turnDropdown.classList.add('row');
     turnDropdown.innerHTML = 
         `<p class="subtitle space-right"><span class="turn-number">${i}.</span></p>
-        <div class="dropdown turn-dropdown space-right">
+        <div class="dropdown turn-dropdown">
             <div class="dropdown-trigger">
                 <button class="button" aria-haspopup="true" aria-controls="dropdown-menu-turn">
                     <span class="turn-title">None</span>
@@ -589,8 +919,6 @@ Sortable.create(turn, {
     animation: 200,
     group: "shared",
     sort: true,
-    // handle: ".notification:not(.turn-dropdown)",
-    // touchStartThreshold: 100,
     delay: 20,
     delayOnTouchOnly: true,
         
@@ -732,6 +1060,12 @@ for (let i = 0; i < actionChoices.length; i++) {
         const actionSurge = document.getElementsByClassName('action-surge')[0];
         if (actionSurge) {
             actionSurge.parentNode.removeChild(actionSurge);
+            numberTurns();
+        }
+        const extraAttack = document.getElementsByClassName('extra-action')[0];
+        if (extraAttack) {
+            extraAttack.parentNode.removeChild(extraAttack);
+            turnContainer.getElementsByClassName('extra-attack-bool')[0].checked = false; 
             numberTurns();
         }
         if (targetElement.classList.contains('extra-attack')) {
@@ -1023,8 +1357,8 @@ document.getElementById('char-submit').addEventListener("click", function() {
                         if (!turnChoices[i].getElementsByClassName('action-desc')[0].classList.contains('is-hidden')) {
                             actionDesc = turnChoices[i].getElementsByClassName('action-input')[0].value;
                         }
-                        // CURRENT: add action surge condition
-                        if (turnChoices[i].getElementsByClassName('extra-attack-bool')[0].checked) {
+                        // CURRENT: add action surge condition (second: action option is Action Surge)
+                        if (turnChoices[i].getElementsByClassName('extra-attack-bool')[0].checked || actionOption === "Action Surge") {
                             turn.push(turnOption);
                         } else {
                             // TODO: figure out exactly how to present (also could push action/bonus option instead)
@@ -1046,7 +1380,7 @@ document.getElementById('char-submit').addEventListener("click", function() {
             console.log("character: " + character.name + " " + character.init);
             console.log("turn: " + turn);
             console.log("additional: " + additional.actionOption + " " + additional.bonusOption);
-            socket.emit('addChar', { character, turn, additional });
+            socket.emit('addChar', username, character, turn, additional);
 
             document.getElementsByClassName('new-character')[0].classList.add('is-hidden');
         }
@@ -1083,14 +1417,10 @@ function validateField(field) {
     let valid = true;
     if (!field.value) {
         valid = false;
-        // roomField.style.backgroundColor = "#FF9785";
-        // roomField.style.borderColor = "#D12100"
         field.classList.add('is-danger');
         field.parentElement.getElementsByClassName('is-right')[0].classList.remove('is-hidden');
         field.parentElement.parentElement.getElementsByClassName('help')[0].classList.remove('is-hidden');
     } else {
-        // roomField.style.backgroundColor = "#fff";
-        // roomField.style.borderColor = "#dbdbdb";
         field.classList.remove('is-danger');
         field.parentElement.getElementsByClassName('is-right')[0].classList.add('is-hidden');
         field.parentElement.parentElement.getElementsByClassName('help')[0].classList.add('is-hidden');
@@ -1130,8 +1460,7 @@ document.getElementById('faq-title').addEventListener("click", function() {
 });
 
 // COMBAT PAGE
-socket.on('fullParty', fullParty => {
-	party = fullParty;
+socket.on('fullParty', async (party) => {
 	partySetup(party);
 });
 
@@ -1143,7 +1472,7 @@ function partySetup(party) {
 	party.forEach(function (pc) {
 		characterBreath.set(pc.character.name, false);
 		for (let i = 0; i < 6; i++) {
-			if (pc.turn[i] !== "None") {
+			if (pc.turn[i] !== "None" && pc.turn[i] !== "Action 2" && pc.turn[i] !== "Breath") {
 				combat[i].push({ 
 					init: Math.floor(Math.random() * 20 + 1) 
 						+ parseFloat(pc.character.init) 
@@ -1151,37 +1480,44 @@ function partySetup(party) {
 					bonus: pc.character.init,
 					name: pc.character.name, 
 					action: pc.turn[i],
-					desc: pc.additional
+					desc: pc.additional,
+                    color: pc.user.color
 				});
-				if (pc.turn[i] === "Breath") {
-					characterBreath.set(pc.character.name, true);
-				} else {
-					characterBreath.set(pc.character.name, false);
-				}
 			}
+            if (pc.turn[i] === "Breath") {
+                characterBreath.set(pc.character.name, true);
+            } else if (pc.turn[i] !== "None") {
+                characterBreath.set(pc.character.name, false);
+            }
 		}
 	});
 	combat.forEach(function (turn) {
 		turn.sort((a,b) => (b.init - a.init) || (b.bonus - a.bonus) 
 		|| (Math.floor(Math.random() * 2) * 2 - 1));
 	});
+    for (let i = 0; i < 6; i++) {
+        if (combat[i].length === 0) {
+            combat[i].push("No choices this second");
+        }
+    }
     sizeOfTurn = [];
     for (let i = 0; i < combat.length; i ++) {
         sizeOfTurn.push(combat[i].length);
     }
 };
 
-socket.on('newTurn', turnDesc => {
-    console.log(turnDesc);
+socket.on('newTurn', ({turnID, pcAction}) => {
 	var div = document.createElement('div');
 	div.classList.add('notification');
-	div.classList.add('is-dark');
-	var pcAction = turnDesc.pcAction;
-	if (pcAction.action.includes("Action")) {
+	div.classList.add(pcAction.color);
+	var pcAction = pcAction;
+    if (typeof pcAction === "string") {
+        div.innerHTML = `<p>${pcAction}</p>`;
+    } else if (pcAction.action.startsWith("Action")) {
 		if (pcAction.desc.actionDesc === "None") {
-			div.innerHTML = `<p>${pcAction.init} - ${pcAction.name}: ${pcAction.action}<br/>(${pcAction.desc.actionOption})</p>`;
+			div.innerHTML = `<p>${pcAction.init} - ${pcAction.name}: Action<br/>(${pcAction.desc.actionOption})</p>`;
 		} else {
-			div.innerHTML = `<p>${pcAction.init} - ${pcAction.name}: ${pcAction.action}<br/>(${pcAction.desc.actionOption}: ${pcAction.desc.actionDesc})</p>`;
+			div.innerHTML = `<p>${pcAction.init} - ${pcAction.name}: Action<br/>(${pcAction.desc.actionOption}: ${pcAction.desc.actionDesc})</p>`;
 		}
 	} else if (pcAction.action === "Bonus Action") {
 		if (pcAction.desc.bonusDesc === "None") {
@@ -1189,20 +1525,17 @@ socket.on('newTurn', turnDesc => {
 		} else {
 			div.innerHTML = `<p>${pcAction.init} - ${pcAction.name}: ${pcAction.action}<br/>(${pcAction.desc.bonusOption}: ${pcAction.desc.bonusDesc})</p>`;
 		}
-    } else if (pcAction.action === "Movement") {
-        div.innerHTML = `<p>${pcAction.init} - ${pcAction.name}: ${pcAction.action}<br/><input class="input move-dist" type="number" placeholder="ex. 10 ft." required></p>`;
-	} else {
+    } else {
 		div.innerHTML = `<p>${pcAction.init} - ${pcAction.name}: ${pcAction.action}</p>`;
 	}
-    console.log(turnDesc);
-	document.getElementById(turnDesc.turnID).prepend(div);
+	document.getElementById(turnID).prepend(div);
 });
 
 socket.on('nextSecond', () => {
     // TODO: if want to have empty turn after move of contianer simply add specific to beginning of combat 1-5 and check for it
     const combatContainer = document.querySelector('.is-ancestor.is-warning');
     combatContainer.prepend(combatContainer.removeChild(combatContainer.getElementsByClassName('is-parent')[5]));
-    combatContainer.getElementsByClassName('card')[0].classList.remove('is-hidden');
+    combatContainer.getElementsByClassName('is-parent')[0].classList.remove('is-hidden');
     combatContainer.getElementsByClassName('card-content')[1].classList.add('is-hidden');
 });
 
