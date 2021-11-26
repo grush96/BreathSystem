@@ -839,9 +839,9 @@ for (let i = 1; i <= 6; i++) {
                 Extra Attack
             </label>
             </br>
-            <p class="help action-note is-hidden">Please choose a specific action</p>
+            <p class="help action-note is-hidden">Please choose specific action</p>
         </div>
-        <div class="bonus-dropdowns is-hidden">
+        <div class="bonus-dropdowns is-hidden row">
             <div class="dropdown bonus-dropdown">
                 <div class="dropdown-trigger">
                     <button class="button" aria-haspopup="true" aria-controls="dropdown-menu-bonus">
@@ -910,7 +910,7 @@ for (let i = 1; i <= 6; i++) {
                 </div>
                 <p class="help is-hidden">Please enter description</p>
             </div>
-            <p class="help bonus-note is-hidden">Please choose a specific bonus action</p>
+            <p class="help bonus-note is-hidden">Please choose specific bonus action</p>
         </div>`
     turnContainer.appendChild(turnDropdown);
 }
