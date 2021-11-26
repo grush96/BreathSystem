@@ -317,7 +317,7 @@ document.getElementById('new-character-button').addEventListener("click", functi
         actionSurge.parentNode.removeChild(actionSurge);
     }
     var turns = document.getElementById('turn').childNodes;
-    for (let i = 0; i < turns.length - 1; i++) {
+    for (let i = 0; i < turns.length; i++) {
         resetBaseContainer(turns[i]);
         resetActionContainer(turns[i]);
         resetBonusContainer(turns[i]);
@@ -421,8 +421,8 @@ socket.on("combatBegins", async() => {
         
         let combatOutput = document.getElementById('combat-output');
         combatOutput.innerHTML = 
-            `<div class="tile is-parent is-12">
-                <div class="tile box is-child is-hidden">
+            `<div class="tile is-parent is-12 is-hidden">
+                <div class="tile box is-child">
                     <p class="title has-text-centered">End of Round <span id="round-num-banner">1</span></p>
                 </div>
             </div>
@@ -585,7 +585,9 @@ socket.on("combatBegins", async() => {
                 charCard.getElementsByClassName('card-content')[0].appendChild(charSecond);
             }
         }
-        characterOutput.getElementsByClassName('card-content')[0].classList.remove('is-hidden');
+        if (characterOutput.getElementsByClassName('card-content').length > 0) {
+            characterOutput.getElementsByClassName('card-content')[0].classList.remove('is-hidden');
+        }
         
         // console.log(combatPage);
         // if (combatPage.getElementsByClassName('combat-output')[0]) {
@@ -1583,7 +1585,7 @@ socket.on('nextSecond', () => {
 });
 
 socket.on('combatEnds', () => {
-    document.querySelector('.tile.box').classList.remove('is-hidden');
+    document.querySelector('.tile.is-parent').classList.remove('is-hidden');
 	if (username === "DM") {
 		document.getElementById("continue-combat").classList.add('is-hidden');
 	} else {
