@@ -582,7 +582,7 @@ socket.on("combatBegins", async() => {
                 } else {
                     charSecond.innerHTML = `<p class="subtitle">${j + 1}. ${userChar.turn[j]}</p>`
                 }
-                charCard.getElementsByClassName('card-content')[i].appendChild(charSecond);
+                charCard.getElementsByClassName('card-content')[0].appendChild(charSecond);
             }
         }
         characterOutput.getElementsByClassName('card-content')[0].classList.remove('is-hidden');
@@ -611,6 +611,25 @@ socket.on("combatBegins", async() => {
         //             <div class="notification">
         //                 <p class="subtitle">6. ${userChar.turn[5]}</p>
         //             </div>
+
+        let removalList = document.getElementById('character-removal');
+        for (let i = 0; i < result.characters.length; i++) {
+            let character = document.createElement('div');
+            const charInfo = result.characters[i];
+            character.classList.add('notification');
+            character.classList.add(charInfo.user.color);
+            character.innerHTML = 
+                `<label class="checkbox ready" style="float: right">
+                    Incapacitated
+                    <input type="checkbox" class="incap-bool">
+                </label>
+                <p class="is-size-3 char-name">${charInfo.character.name}</p>
+                <div class="remove-info" type="hidden" room="${charInfo.user.room}" 
+                    id="${charInfo.user.id}" name="${charInfo.character.name}"
+                    player="${charInfo.user.name}"></div>
+                <p class="is-size-6">Player: ${charInfo.user.name}</p>`
+            removalList.appendChild(character);
+        }
 
         enableLandingButton();
         disableDMButtons();
@@ -651,6 +670,12 @@ continueButton.addEventListener("click", function() {
             }
             const pcAction = combat[i][0];
             const turnID = turns[i];
+            console.log(pcAction);
+            let incapacitated = checkIncap(pcAction.name);
+            console.log("incapacitated: " + incapacitated);
+            if (incapacitated) {
+                pcAction.action = "Incapacitated";
+            }
             socket.emit('addTurn', { turnID, pcAction });
             combat[i].splice(0, 1);
             if (i !== 5 && combat[i].length === 0) {
@@ -663,6 +688,16 @@ continueButton.addEventListener("click", function() {
         }
     }
 });
+
+function checkIncap(charName) {
+    const info = document.getElementById('character-removal')
+                    .querySelector(`[name="${charName}"]`);
+    if (info) {
+       return info.parentElement.getElementsByClassName('incap-bool')[0].checked;
+    } else {
+        return false;
+    }
+}
 
 // Add room name to DOM
 function outputRoomName(room) {

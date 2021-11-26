@@ -353,6 +353,7 @@ i {
 
 .card {
     border-radius: 6px;
+    margin-bottom: 1.5rem;
 }
 
 .card-content.second-card {
