@@ -16,7 +16,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@700&family=Montserrat:wght@500&display=swap" rel="stylesheet">
     <script src="https://kit.fontawesome.com/0b69a58e13.js" crossorigin="anonymous"></script>
     <style>
-        label {
+        label, .help {
             text-shadow: 
                 -2px -2px 10px #000, 
                 2px -2px 10px #000, 
@@ -98,7 +98,7 @@
                     </div> -->
                     <!-- is-offset-1 -->
                     <div class="column is-5"> 
-                        <form action="main.html">
+                        <form action="main.html" id="player-form">
                             <div class="form-control subtitle mb-3">
                                 <div class="field">
                                     <label for="username">Player Name</label>
@@ -127,6 +127,7 @@
                                         </span>
                                     </div>
                                     <p class="help is-danger is-hidden">Please enter room</p>
+                                    <p class="help is-danger is-hidden">This room does not exist</p>
                                 </div>
                             </div>
                             <button type="submit" class="button title mt-3" id="player-join">Join Session</button>
@@ -149,8 +150,11 @@
         </div> -->
     </section>
     <!-- <script src="../js/bulma.js"></script> -->
+    <script src="https://cdn.socket.io/4.2.0/socket.io.min.js" integrity="sha384-PiBR5S00EtOj2Lto9Uu81cmoyZqR57XcOna1oAuVuIEjzj0wpqDVfD0JA9eXlRsj" crossorigin="anonymous"></script>
     <script>
         // const room = Math.random().toString(36).substr(2, 5);
+        // const socket = io();
+        
         const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ";
         var roomCode = "";
         for (let i = 0; i < 4; i++) {
@@ -163,15 +167,30 @@
         document.getElementById('dm-input').appendChild(roomNum);
 
         // TODO: also include check for room existence 
-        document.getElementById('player-join').addEventListener("click", function(event) {
+        document.getElementById('player-join').addEventListener("click", async function(event) {
+            event.preventDefault();
+
             const nameField = document.getElementsByClassName('input')[0];
             const roomField = document.getElementsByClassName('input')[1];
 
+            roomField.classList.remove('is-danger');
+            roomField.parentElement.getElementsByClassName('is-right')[0].classList.add('is-hidden');
+            roomField.parentElement.parentElement.getElementsByClassName('help')[1].classList.add('is-hidden');
+
             const nameValid = validateField(nameField);
             const roomValid = validateField(roomField);
+            const roomExists = await fetch("http://localhost:3000/ids?room=" + roomField.value).then(response => response.json());
 
-            if (!nameValid || !roomValid) {
-                event.preventDefault();
+            console.log(roomExists);
+            if (roomValid && !roomExists) {
+                console.log("room doesn't exist");
+                roomField.classList.add('is-danger');
+                roomField.parentElement.getElementsByClassName('is-right')[0].classList.remove('is-hidden');
+                roomField.parentElement.parentElement.getElementsByClassName('help')[1].classList.remove('is-hidden');
+            }
+
+            if (nameValid && roomValid && roomExists) {
+                document.getElementById('player-form').submit();
             }
         });
 

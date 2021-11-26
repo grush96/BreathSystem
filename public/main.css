@@ -189,9 +189,10 @@ i {
     width: auto;
 } */
 
+/* !!!
 .notification.is-dark {
     margin: 0.3rem;
-}
+} */
 
 .checkbox:hover {
     color: inherit;

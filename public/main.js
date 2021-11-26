@@ -17,24 +17,28 @@ socket.on('roomUsers', async (users) => {
 });
 
 socket.on("joinedChat", async () => {
-    let result = await fetch("http://localhost:3000/rooms?room=" + room).then(response => response.json());
-    let messages = result.messages;
-    
-    const div = document.createElement('div');
-    div.classList.add('notification');
-    div.classList.add('is-dark');
-    div.classList.add('chat-message');
-    div.innerHTML = `<p>Welcome to room ${room}</p>`;
-    document.querySelector('.chat-messages').appendChild(div);
-
-    for (let i = 0; i < messages.length; i++) {
+    try {
+        let result = await fetch("http://localhost:3000/rooms?room=" + room).then(response => response.json());
+        let messages = result.messages;
+        
         const div = document.createElement('div');
         div.classList.add('notification');
         div.classList.add('is-dark');
         div.classList.add('chat-message');
-        div.innerHTML = `<p>${messages[i].name}: ${messages[i].text}</p>`;
+        div.innerHTML = `<p>Welcome to room ${room}</p>`;
         document.querySelector('.chat-messages').appendChild(div);
-    };
+
+        for (let i = 0; i < messages.length; i++) {
+            const div = document.createElement('div');
+            div.classList.add('notification');
+            div.classList.add('is-dark');
+            div.classList.add('chat-message');
+            div.innerHTML = `<p>${messages[i].name}: ${messages[i].text}</p>`;
+            document.querySelector('.chat-messages').appendChild(div);
+        };
+    } catch (e) {
+        console.error(e);
+    }
 });
 
 disableDMButtons();
@@ -410,210 +414,214 @@ socket.on("setRoundResponse", (roundNum) => {
 });
 
 socket.on("combatBegins", async() => {
-	var combatPage = document.getElementById('combat-page');
-    document.getElementById('character-page').classList.add('is-hidden');
-    combatPage.classList.remove('is-hidden');
-    
-    let combatOutput = document.getElementById('combat-output');
-    combatOutput.innerHTML = 
-        `<div class="tile is-parent is-12">
-            <div class="tile box is-child is-hidden">
-                <p class="title has-text-centered">End of Round <span id="round-num-banner">1</span></p>
-            </div>
-        </div>
-        <div class="tile is-ancestor is-warning row">
-            <div class="tile is-parent is-12">
-                <div class="card tile is-child">
-                    <header class="card-header">
-                        <p class="card-header-title">First Second</p>
-                        <block class="card-header-icon turn-toggle" aria-label="more options">
-                            <span class="icon">
-                                <i class="fas fa-angle-down" aria-hidden="true"></i>
-                            </span>
-                        </block>
-                    </header>
-                    <div class="card-content second-card">
-                        <div id="first-second"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="tile is-parent is-12 is-hidden">
-                <div class="card tile is-child">
-                    <header class="card-header">
-                        <p class="card-header-title">Sixth Second</p>
-                        <block class="card-header-icon turn-toggle" aria-label="more options">
-                            <span class="icon">
-                                <i class="fas fa-angle-down" aria-hidden="true"></i>
-                            </span>
-                        </block>
-                    </header>
-                    <div class="card-content second-card">
-                        <div id="sixth-second"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="tile is-parent is-12 is-hidden">
-                <div class="card tile is-child">
-                    <header class="card-header">
-                        <p class="card-header-title">Fifth Second</p>
-                        <block class="card-header-icon turn-toggle" aria-label="more options">
-                            <span class="icon">
-                                <i class="fas fa-angle-down" aria-hidden="true"></i>
-                            </span>
-                        </block>
-                    </header>
-                    <div class="card-content second-card">
-                        <div id="fifth-second"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="tile is-parent is-12 is-hidden">
-                <div class="card tile is-child">
-                    <header class="card-header">
-                        <p class="card-header-title">Fourth Second</p>
-                        <block class="card-header-icon turn-toggle" aria-label="more options">
-                            <span class="icon">
-                                <i class="fas fa-angle-down" aria-hidden="true"></i>
-                            </span>
-                        </block>
-                    </header>
-                    <div class="card-content second-card">
-                        <div id="fourth-second"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="tile is-parent is-12 is-hidden">
-                <div class="card tile is-child">
-                    <header class="card-header">
-                        <p class="card-header-title">Third Second</p>
-                        <block class="card-header-icon turn-toggle" aria-label="more options">
-                            <span class="icon">
-                                <i class="fas fa-angle-down" aria-hidden="true"></i>
-                            </span>
-                        </block>
-                    </header>
-                    <div class="card-content second-card">
-                        <div id="third-second"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="tile is-parent is-12 is-hidden">
-                <div class="card tile is-child">
-                    <header class="card-header">
-                        <p class="card-header-title">Second Second</p>
-                        <block class="card-header-icon turn-toggle" aria-label="more options">
-                            <span class="icon">
-                                <i class="fas fa-angle-down" aria-hidden="true"></i>
-                            </span>
-                        </block>
-                    </header>
-                    <div class="card-content second-card">
-                        <div id="second-second"></div>
-                    </div>
-                </div>
-            </div>
-        </div>`;
-    
-    let characterOutput = document.getElementById('character-output');
-    characterOutput.innerHTML = "";
-    let result = await fetch("http://localhost:3000/rooms?room=" + room).then(response => response.json());
-    let userChars;
-    if (result) {
-		userChars = result.characters.filter(character => {
-            console.log("character: " + character);
-			return character.user.name === username;
-		});
-	}
-    console.log("userChars: " + userChars);
-    for (let i = 0; i < userChars.length; i++) {
-        console.log("in print out phase");
-        const userChar = userChars[i];
-        let charCard = document.createElement('div');
-        charCard.classList.add('card');
-        charCard.innerHTML = 
-            `<header class="card-header">
-                <p class="card-header-title">${userChar.character.name}</p>
-                <block class="card-header-icon turn-toggle" aria-label="more options">
-                    <span class="icon">
-                        <i class="fas fa-angle-down" aria-hidden="true"></i>
-                    </span>
-                </block>
-            </header>
-            <div class="card-content is-hidden"></div>`;
-
-        characterOutput.appendChild(charCard);
+    try {
+        var combatPage = document.getElementById('combat-page');
+        document.getElementById('character-page').classList.add('is-hidden');
+        combatPage.classList.remove('is-hidden');
         
-        for (let j = 0; j < 6; j++) {
-            let charSecond = document.createElement('div');
-            charSecond.classList.add('notification');
-            if (userChar.turn[j].startsWith("Action")) {
-                charSecond.classList.add("is-action");
-                if (userChar.additional.actionDesc !== "None") {
-                    charSecond.innerHTML = `<p class="subtitle">${j + 1}. ${userChar.turn[j]}: 
-                        ${userChar.additional.actionOption} - ${userChar.additional.actionDesc}</p>`
-                } else {
-                    charSecond.innerHTML = `<p class="subtitle">${j + 1}. ${userChar.turn[j]}: 
-                        ${userChar.additional.actionOption}</p>`
-                }
-            } else if (userChar.turn[j] === "Extra Attack" || userChar.turn[j] === "Action Surge") {
-                charSecond.classList.add("is-action");
-                charSecond.innerHTML = `<p class="subtitle">${j + 1}. ${userChar.turn[j]}</p>`
-            } else if (userChar.turn[j] === "Bonus Action") {
-                charSecond.classList.add("is-bonus-action");
-                if (userChar.additional.bonusDesc !== "None") {
-                    charSecond.innerHTML = `<p class="subtitle">${j + 1}. ${userChar.turn[j]}: 
-                        ${userChar.additional.bonusOption} - ${userChar.additional.bonusDesc}</p>`
-                } else {
-                    charSecond.innerHTML = `<p class="subtitle">${j + 1}. ${userChar.turn[j]}: 
-                        ${userChar.additional.bonusOption}</p>`
-                }
-            } else if (userChar.turn[j] === "Movement") {
-                charSecond.classList.add("is-movement");
-                charSecond.innerHTML = `<p class="subtitle">${j + 1}. ${userChar.turn[j]}: 
-                    <input class="input move-dist" type="number" placeholder="ex. 10 ft." required></p>`
-            } else if (userChar.turn[j] === "Breath") {
-                charSecond.classList.add("is-breath");
-                charSecond.innerHTML = `<p class="subtitle">${j + 1}. ${userChar.turn[j]}</p>`
-            } else {
-                charSecond.innerHTML = `<p class="subtitle">${j + 1}. ${userChar.turn[j]}</p>`
-            }
-            charCard.getElementsByClassName('card-content')[i].appendChild(charSecond);
+        let combatOutput = document.getElementById('combat-output');
+        combatOutput.innerHTML = 
+            `<div class="tile is-parent is-12">
+                <div class="tile box is-child is-hidden">
+                    <p class="title has-text-centered">End of Round <span id="round-num-banner">1</span></p>
+                </div>
+            </div>
+            <div class="tile is-ancestor is-warning row">
+                <div class="tile is-parent is-12">
+                    <div class="card tile is-child">
+                        <header class="card-header">
+                            <p class="card-header-title">First Second</p>
+                            <block class="card-header-icon turn-toggle" aria-label="more options">
+                                <span class="icon">
+                                    <i class="fas fa-angle-down" aria-hidden="true"></i>
+                                </span>
+                            </block>
+                        </header>
+                        <div class="card-content second-card">
+                            <div id="first-second"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tile is-parent is-12 is-hidden">
+                    <div class="card tile is-child">
+                        <header class="card-header">
+                            <p class="card-header-title">Sixth Second</p>
+                            <block class="card-header-icon turn-toggle" aria-label="more options">
+                                <span class="icon">
+                                    <i class="fas fa-angle-down" aria-hidden="true"></i>
+                                </span>
+                            </block>
+                        </header>
+                        <div class="card-content second-card">
+                            <div id="sixth-second"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tile is-parent is-12 is-hidden">
+                    <div class="card tile is-child">
+                        <header class="card-header">
+                            <p class="card-header-title">Fifth Second</p>
+                            <block class="card-header-icon turn-toggle" aria-label="more options">
+                                <span class="icon">
+                                    <i class="fas fa-angle-down" aria-hidden="true"></i>
+                                </span>
+                            </block>
+                        </header>
+                        <div class="card-content second-card">
+                            <div id="fifth-second"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tile is-parent is-12 is-hidden">
+                    <div class="card tile is-child">
+                        <header class="card-header">
+                            <p class="card-header-title">Fourth Second</p>
+                            <block class="card-header-icon turn-toggle" aria-label="more options">
+                                <span class="icon">
+                                    <i class="fas fa-angle-down" aria-hidden="true"></i>
+                                </span>
+                            </block>
+                        </header>
+                        <div class="card-content second-card">
+                            <div id="fourth-second"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tile is-parent is-12 is-hidden">
+                    <div class="card tile is-child">
+                        <header class="card-header">
+                            <p class="card-header-title">Third Second</p>
+                            <block class="card-header-icon turn-toggle" aria-label="more options">
+                                <span class="icon">
+                                    <i class="fas fa-angle-down" aria-hidden="true"></i>
+                                </span>
+                            </block>
+                        </header>
+                        <div class="card-content second-card">
+                            <div id="third-second"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tile is-parent is-12 is-hidden">
+                    <div class="card tile is-child">
+                        <header class="card-header">
+                            <p class="card-header-title">Second Second</p>
+                            <block class="card-header-icon turn-toggle" aria-label="more options">
+                                <span class="icon">
+                                    <i class="fas fa-angle-down" aria-hidden="true"></i>
+                                </span>
+                            </block>
+                        </header>
+                        <div class="card-content second-card">
+                            <div id="second-second"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        
+        let characterOutput = document.getElementById('character-output');
+        characterOutput.innerHTML = "";
+        let result = await fetch("http://localhost:3000/rooms?room=" + room).then(response => response.json());
+        let userChars;
+        if (result) {
+            userChars = result.characters.filter(character => {
+                console.log("character: " + character);
+                return character.user.name === username;
+            });
         }
+        console.log("userChars: " + userChars);
+        for (let i = 0; i < userChars.length; i++) {
+            console.log("in print out phase");
+            const userChar = userChars[i];
+            let charCard = document.createElement('div');
+            charCard.classList.add('card');
+            charCard.innerHTML = 
+                `<header class="card-header">
+                    <p class="card-header-title">${userChar.character.name}</p>
+                    <block class="card-header-icon turn-toggle" aria-label="more options">
+                        <span class="icon">
+                            <i class="fas fa-angle-down" aria-hidden="true"></i>
+                        </span>
+                    </block>
+                </header>
+                <div class="card-content is-hidden"></div>`;
+
+            characterOutput.appendChild(charCard);
+            
+            for (let j = 0; j < 6; j++) {
+                let charSecond = document.createElement('div');
+                charSecond.classList.add('notification');
+                if (userChar.turn[j].startsWith("Action")) {
+                    charSecond.classList.add("is-action");
+                    if (userChar.additional.actionDesc !== "None") {
+                        charSecond.innerHTML = `<p class="subtitle">${j + 1}. ${userChar.turn[j]}: 
+                            ${userChar.additional.actionOption} - ${userChar.additional.actionDesc}</p>`
+                    } else {
+                        charSecond.innerHTML = `<p class="subtitle">${j + 1}. ${userChar.turn[j]}: 
+                            ${userChar.additional.actionOption}</p>`
+                    }
+                } else if (userChar.turn[j] === "Extra Attack" || userChar.turn[j] === "Action Surge") {
+                    charSecond.classList.add("is-action");
+                    charSecond.innerHTML = `<p class="subtitle">${j + 1}. ${userChar.turn[j]}</p>`
+                } else if (userChar.turn[j] === "Bonus Action") {
+                    charSecond.classList.add("is-bonus-action");
+                    if (userChar.additional.bonusDesc !== "None") {
+                        charSecond.innerHTML = `<p class="subtitle">${j + 1}. ${userChar.turn[j]}: 
+                            ${userChar.additional.bonusOption} - ${userChar.additional.bonusDesc}</p>`
+                    } else {
+                        charSecond.innerHTML = `<p class="subtitle">${j + 1}. ${userChar.turn[j]}: 
+                            ${userChar.additional.bonusOption}</p>`
+                    }
+                } else if (userChar.turn[j] === "Movement") {
+                    charSecond.classList.add("is-movement");
+                    charSecond.innerHTML = `<p class="subtitle">${j + 1}. ${userChar.turn[j]}: 
+                        <input class="input move-dist" type="number" placeholder="ex. 10 ft." required></p>`
+                } else if (userChar.turn[j] === "Breath") {
+                    charSecond.classList.add("is-breath");
+                    charSecond.innerHTML = `<p class="subtitle">${j + 1}. ${userChar.turn[j]}</p>`
+                } else {
+                    charSecond.innerHTML = `<p class="subtitle">${j + 1}. ${userChar.turn[j]}</p>`
+                }
+                charCard.getElementsByClassName('card-content')[i].appendChild(charSecond);
+            }
+        }
+        characterOutput.getElementsByClassName('card-content')[0].classList.remove('is-hidden');
+        
+        // console.log(combatPage);
+        // if (combatPage.getElementsByClassName('combat-output')[0]) {
+        //     combatPage.removeChild(combatPage.getElementsByClassName('combat-output')[0]);
+        // }
+        // combatPage.appendChild(combatOutput);
+
+        // <div class="notification">
+        //                 <p class="subtitle">1. ${userChar.turn[0]}</p>
+        //             </div>
+        //             <div class="notification">
+        //                 <p class="subtitle">2. ${userChar.turn[1]}</p>
+        //             </div>
+        //             <div class="notification">
+        //                 <p class="subtitle">3. ${userChar.turn[2]}</p>
+        //             </div>
+        //             <div class="notification">
+        //                 <p class="subtitle">4. ${userChar.turn[3]}</p>
+        //             </div>
+        //             <div class="notification">
+        //                 <p class="subtitle">5. ${userChar.turn[4]}</p>
+        //             </div>
+        //             <div class="notification">
+        //                 <p class="subtitle">6. ${userChar.turn[5]}</p>
+        //             </div>
+
+        enableLandingButton();
+        disableDMButtons();
+        enableTurnDropdowns();
+
+        if (username === "DM") {
+            document.getElementById('continue-combat').classList.remove('is-hidden');
+        }
+    } catch (e) {
+        console.error(e);
     }
-    characterOutput.getElementsByClassName('card-content')[0].classList.remove('is-hidden');
-    
-    // console.log(combatPage);
-    // if (combatPage.getElementsByClassName('combat-output')[0]) {
-    //     combatPage.removeChild(combatPage.getElementsByClassName('combat-output')[0]);
-    // }
-    // combatPage.appendChild(combatOutput);
-
-    // <div class="notification">
-    //                 <p class="subtitle">1. ${userChar.turn[0]}</p>
-    //             </div>
-    //             <div class="notification">
-    //                 <p class="subtitle">2. ${userChar.turn[1]}</p>
-    //             </div>
-    //             <div class="notification">
-    //                 <p class="subtitle">3. ${userChar.turn[2]}</p>
-    //             </div>
-    //             <div class="notification">
-    //                 <p class="subtitle">4. ${userChar.turn[3]}</p>
-    //             </div>
-    //             <div class="notification">
-    //                 <p class="subtitle">5. ${userChar.turn[4]}</p>
-    //             </div>
-    //             <div class="notification">
-    //                 <p class="subtitle">6. ${userChar.turn[5]}</p>
-    //             </div>
-
-    enableLandingButton();
-    disableDMButtons();
-    enableTurnDropdowns();
-
-    if (username === "DM") {
-		document.getElementById('continue-combat').classList.remove('is-hidden');
-	}
 });
 
 function enableTurnDropdowns() {
