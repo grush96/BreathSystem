@@ -168,6 +168,56 @@ i {
     /* background-color: #eefbfb; */
 }
 
+.is-red {
+    background-color: #920909;
+    color: #eee;
+}
+
+.is-blue {
+    background-color: #0D23A7;
+    color: #eee;
+}
+
+.is-green {
+    background-color: #08531B;
+    color: #eee;
+}
+
+.is-pink {
+    background-color: #79265E;
+    color: #eee;
+}
+
+.is-orange {
+    background-color: #7E3E03;
+    color: #eee;
+}
+
+.is-purple {
+    background-color: #5C27A1;
+    color: #eee;
+}
+
+.is-brown {
+    background-color: #633F19;
+    color: #eee;
+}
+
+.is-yellow {
+    background-color: #f5f557;
+    color: #333;
+}
+
+.is-light-blue {
+    background-color: #38fedc;
+    color: #333;
+}
+
+.is-light-green {
+    background-color: #50ef39;
+    color: #333;
+}
+
 .is-hidden {
     display: none;
 }

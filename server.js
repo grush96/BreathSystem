@@ -62,7 +62,7 @@ io.on('connection', socket => {
 				 	users: [],
 					messages: [],
 					characters: [],
-					colors: ["is-dark", "is-primary", "is-link", "is-info", "is-success", "is-warning", "is-danger"]
+					colors: ["is-dark", "is-red", "is-blue", "is-green", "is-pink", "is-orange", "is-purple", "is-brown", "is-yellow", "is-light-blue", "is-light-green"]
 				});
 			}
 
