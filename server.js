@@ -6,7 +6,6 @@ const cors = require("cors");
 const path = require('path');
 const { MongoClient } = require("mongodb");
 const e = require("cors");
-// const { response } = require("express");
 
 const uri = "mongodb+srv://grush:mD5gvXU9@cluster0.icein.mongodb.net/BreathDB?retryWrites=true&w=majority";
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -31,8 +30,9 @@ var collection;
 
 // Run when client connects
 io.on('connection', socket => {
-	let roomCode;
 	const socketId = socket.id;
+	let roomCode;
+	let user;
 
 	socket.on('checkRoom', async (room) => {
 		try {
@@ -55,6 +55,7 @@ io.on('connection', socket => {
 		try {
 			let result = await collection.findOne({ "_id": room });
 			roomCode = room;
+			user = username;
 			if (!result) {
 				await collection.insertOne({ 
 					"_id": room,
@@ -95,8 +96,9 @@ io.on('connection', socket => {
 			
 			const users = await getRoomUsers(room);
 			io.to(room).emit('roomUsers', users);
-
-			socket.emit("joinedChat");
+			
+			const messages = await getRoomMessages(room);
+			socket.emit("joinedChat", messages);
 
 			// Send character in combat info
 			const characters = await getRoomChars(room);
@@ -223,8 +225,10 @@ io.on('connection', socket => {
 		io.to(socket.activeRoom).emit('newTurn', {turnID, pcAction});
 	});
 
-	socket.on('beginCombat', () => {
-		io.to(socket.activeRoom).emit("combatBegins");
+	socket.on('beginCombat', async() => {
+		const userChars = await getUserChars(socket.activeRoom, user);
+		const allChars = await getRoomChars(socket.activeRoom);
+		io.to(socket.activeRoom).emit("combatBegins", userChars, allChars);
 	});
 
 	socket.on('nextSecond', () => {
@@ -235,6 +239,8 @@ io.on('connection', socket => {
 		io.to(socket.activeRoom).emit("combatEnds");
 	})
 
+	// socket.on('disconnecting', async() => {});
+	
 	//Runs when client disconnects
 	socket.on('disconnect', async () => {
 		try {
@@ -324,6 +330,22 @@ async function getRoomUser(room, userId) {
 	}
 }
 
+async function getRoomMessages(room) {
+	try {
+		collection = client.db("datadb").collection("rooms");
+		const cursor = collection.find({ "_id": room });
+		const results = await cursor.toArray();
+		let messages;
+
+		if (results.length > 0) {
+			messages = results[0].messages;
+		}
+		return messages;
+	} catch (e) {
+		console.error(e);
+	}
+}
+
 async function getRoomChars(room) {
 	try {
 		await delay(50);
@@ -354,6 +376,26 @@ async function getRoomChar(room, name) {
 				return character.character.name === name;
 			});
 			return character[0];
+		} else {
+			return 0;
+		}
+	} catch (e) {
+		console.error(e);
+	}
+}
+
+async function getUserChars(room, username) {
+	try {
+		collection = client.db("datadb").collection("rooms");
+		const cursor = collection.find({ "_id": room });
+		const results = await cursor.toArray();
+		let userChars;
+
+		if (results.length > 0) {
+			userChars = results[0].characters.filter(character => {
+				return character.user.name === username;
+			});
+			return userChars;
 		} else {
 			return 0;
 		}

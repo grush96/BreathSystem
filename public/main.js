@@ -16,10 +16,10 @@ socket.on('roomUsers', async (users) => {
 	outputUsers(users);
 });
 
-socket.on("joinedChat", async () => {
+socket.on("joinedChat", async (messages) => {
     try {
-        let result = await fetch("http://localhost:3000/rooms?room=" + room).then(response => response.json());
-        let messages = result.messages;
+        // let result = await fetch("http://localhost:3000/rooms?room=" + room).then(response => response.json());
+        // let messages = result.messages;
         
         const div = document.createElement('div');
         div.classList.add('notification');
@@ -413,7 +413,7 @@ socket.on("setRoundResponse", (roundNum) => {
     }
 });
 
-socket.on("combatBegins", async() => {
+socket.on("combatBegins", async(userChars, allChars) => {
     try {
         var combatPage = document.getElementById('combat-page');
         document.getElementById('character-page').classList.add('is-hidden');
@@ -521,14 +521,14 @@ socket.on("combatBegins", async() => {
         
         let characterOutput = document.getElementById('character-output');
         characterOutput.innerHTML = "";
-        let result = await fetch("http://localhost:3000/rooms?room=" + room).then(response => response.json());
-        let userChars;
-        if (result) {
-            userChars = result.characters.filter(character => {
-                console.log("character: " + character);
-                return character.user.name === username;
-            });
-        }
+        // let result = await fetch("http://localhost:3000/rooms?room=" + room).then(response => response.json());
+        // let userChars;
+        // if (result) {
+        //     userChars = result.characters.filter(character => {
+        //         console.log("character: " + character);
+        //         return character.user.name === username;
+        //     });
+        // }
         console.log("userChars: " + userChars);
         for (let i = 0; i < userChars.length; i++) {
             console.log("in print out phase");
@@ -615,9 +615,9 @@ socket.on("combatBegins", async() => {
         //             </div>
 
         let removalList = document.getElementById('character-removal');
-        for (let i = 0; i < result.characters.length; i++) {
+        for (let i = 0; i < allChars.length; i++) {
             let character = document.createElement('div');
-            const charInfo = result.characters[i];
+            const charInfo = allChars[i];
             character.classList.add('notification');
             character.classList.add(charInfo.user.color);
             character.innerHTML = 
@@ -670,13 +670,16 @@ continueButton.addEventListener("click", function() {
             if (i !== 0 && combat[i].length === sizeOfTurn[i]) {
                 socket.emit('nextSecond');
             }
-            const pcAction = combat[i][0];
+            let pcAction = combat[i][0];
             const turnID = turns[i];
             console.log(pcAction);
             let incapacitated = checkIncap(pcAction.name);
             console.log("incapacitated: " + incapacitated);
-            if (incapacitated) {
-                pcAction.action = "Incapacitated";
+            if (incapacitated && typeof pcAction !== "string") {
+                console.log("Action:" + pcAction);
+                pcAction = `${pcAction.name} is incapacitated`;
+                // pcAction.action = "Incapacitated";
+                // pcAction.color = "";
             }
             socket.emit('addTurn', { turnID, pcAction });
             combat[i].splice(0, 1);
